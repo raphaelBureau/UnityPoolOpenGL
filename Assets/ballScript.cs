@@ -15,4 +15,11 @@ public class ballScript : MonoBehaviour
     {
         
     }
+    private void FixedUpdate()
+    {
+        if(transform.position.y < -2) //tombé
+        {
+            gameObject.SetActive(false);
+        }
+    }
 }

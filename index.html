@@ -17,11 +17,6 @@
         </div>
       </div>
       <div id="unity-warning"> </div>
-      <div id="unity-footer">
-        <div id="unity-webgl-logo"></div>
-        <div id="unity-fullscreen-button"></div>
-        <div id="unity-build-title">PoolWeb</div>
-      </div>
     </div>
     <script>
 
@@ -94,8 +89,8 @@
       } else {
         // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
 
-        canvas.style.width = "960px";
-        canvas.style.height = "600px";
+        canvas.style.width = window.innerWidth;
+        canvas.style.height = window.innerHeight;
       }
 
       loadingBar.style.display = "block";

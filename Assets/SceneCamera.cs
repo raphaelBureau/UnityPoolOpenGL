@@ -8,11 +8,15 @@ public class SceneCamera : MonoBehaviour
     [SerializeField] SceneCamera point2 = null;
     [SerializeField] SceneCamera point3 = null;
 
+    [SerializeField] GameObject mainBall;
+
     List<GameObject> balls;
 
-    float velocityFactor = 5f; //determine si une balle qui bouge vaut plus que deux balles qui bougent moins
+    [SerializeField] float velocityFactor = 40f; //determine si une balle qui bouge vaut plus que deux balles qui bougent moins
+    [SerializeField] float yVelocityFactor = 20f; //favorise une balle qui tombe
+    [SerializeField] float viewDistanceFactor = 5f; //favorise une position de camera plus proche de laction
 
-    int nbBalles = 0;
+    int nbBalles;
 
     public float Priority
     {
@@ -25,7 +29,11 @@ public class SceneCamera : MonoBehaviour
             float totalVelocity = 0;
             foreach (GameObject ball in balls)
             {
-                totalVelocity += ball.GetComponent<Rigidbody>().velocity.magnitude;
+                if (ball.activeSelf)
+                {
+                    Rigidbody rb = ball.GetComponent<Rigidbody>();
+                    totalVelocity += rb.velocity.magnitude + rb.angularVelocity.magnitude + Mathf.Abs(rb.velocity.y) * yVelocityFactor;
+                }
             }
             return totalVelocity;
         }
@@ -33,15 +41,19 @@ public class SceneCamera : MonoBehaviour
     public GameObject BestBall
     {
         get {
-            GameObject bestBall = null;
-            float bestVelocity = 0f;
+            GameObject bestBall = mainBall;
+            float bestVelocity = -999f;
             foreach (GameObject ball in balls)
             {
-                float vel = ball.GetComponent<Rigidbody>().velocity.magnitude;
-                if (bestVelocity < vel)
+                if (ball.activeSelf)
                 {
-                    bestVelocity = vel;
-                    bestBall = ball;
+                    Rigidbody rb = ball.GetComponent<Rigidbody>();
+                    float vel = rb.velocity.magnitude + rb.angularVelocity.magnitude + Mathf.Abs(rb.velocity.y) * yVelocityFactor;
+                    if (bestVelocity < vel)
+                    {
+                        bestVelocity = vel;
+                        bestBall = ball;
+                    }
                 }
             }
             return bestBall;
@@ -57,7 +69,8 @@ public class SceneCamera : MonoBehaviour
     void Start()
     {
         balls = new List<GameObject>();
-        points = new();
+        points = new List<SceneCamera>();
+        nbBalles = 0;
         if (point1!=null)
         {
             points.Add(point1);
@@ -84,20 +97,21 @@ public class SceneCamera : MonoBehaviour
     /// <returns></returns>
      public ((Vector3 position,GameObject ball) pos,float priority) GetBestCamera()
       {
-        float priority = -1;
-        Vector3 pos = Vector3.zero;
-        GameObject ball = transform.gameObject;
-        if (BestBall != null)
-        {
-            ball = BestBall;
-        }
+        float priority = -999;
+        Vector3 pos = transform.position + Vector3.up*4;
+        GameObject ball = BestBall;
         foreach(var el in points)
         {
-            if(priority<el.Priority)
+            float viewDist = Mathf.Abs((pos - el.BestBall.transform.position).magnitude) * viewDistanceFactor;
+            if (priority<el.Priority - viewDist)
             {
-                priority = el.Priority;
-                pos = el.Position;
+                priority = Priority - viewDist;
+                ball = el.BestBall;
             }
+        }
+        if((pos - ball.transform.position).magnitude < 7)
+        {
+            pos += Vector3.up * 3;
         }
         return ((pos,ball), priority);
       }
