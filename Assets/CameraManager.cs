@@ -9,10 +9,11 @@ public class CameraManager : MonoBehaviour
     [SerializeField] Camera cam;
     [SerializeField] float CamSpeed = 10f;
     [SerializeField] Transform skyView;
-    [SerializeField] float skyPriorityMargin = 10f;
+    [SerializeField] float skyPriorityMargin = 20f;
+    [SerializeField] float LazySkyMargin = 5f;
     [SerializeField] GameObject mainBall;
 
-
+    bool inSky = false;
     //temp
     [SerializeField] GameObject BallGameObj;
     List<GameObject> ballList; //si ca bouge pus cest le temps de controller la boulle
@@ -27,7 +28,7 @@ public class CameraManager : MonoBehaviour
     {
         Active = false;
         cams = transform.GetComponentsInChildren<SceneCamera>();
-
+        inSky = false;
 
         //temp
         int nbBoules = BallGameObj.transform.childCount;
@@ -38,58 +39,78 @@ public class CameraManager : MonoBehaviour
         }
     }
 
+    Vector3 GetBestLookPos()
+    {
+        Vector3 res = Vector3.zero;
+        List<(float vel, Vector3 pos)> fastBalls = new();
+        float totalVel = 0;
+        foreach(var ball in ballList)
+        {
+            if(ball.activeSelf) { 
+            float vel = ball.GetComponent<Rigidbody>().velocity.magnitude;
+            if(vel > 0)
+            {
+                fastBalls.Add((vel, ball.transform.position));
+                totalVel += vel;
+            }
+            }
+        }
+        if (totalVel == 0)
+        {
+            return mainBall.transform.position;
+        }
+        foreach(var ball in fastBalls)
+        {
+            res += ball.pos*ball.vel;
+           // print("pos: " + ball.pos + ", vel:" + ball.vel);
+        }
+        res = res / totalVel;
+       // print("main: " + mainBall.transform.position + ", lookAvg:" + res + ", totalVel: " + totalVel);
+        return res;
+    }
+
     // Update is called once per frame
     void Update()
     {
         if (Active)
         {
-            List<((Vector3 pos, GameObject look) movement, float priority)> positions = new();
+            List<(Vector3 pos, float priority)> positions = new();
 
             foreach (var camera in cams)
             {
                 positions.Add(camera.GetBestCamera());
             }
-            positions.Sort((el1, el2) => (el2.priority - Mathf.Abs((cam.transform.position - el2.movement.pos).magnitude)).CompareTo(el1.priority - Mathf.Abs((cam.transform.position - el1.movement.pos).magnitude)));
-            bool sky = false;
-            float prevPrio = 0;
-            for(int i =0; i<positions.Count;i++)
+            positions.Sort((el1, el2) => (el2.priority).CompareTo(el1.priority));
+            
+            if(inSky)
             {
-                if(i==0)
+                if (positions[0].priority - positions[1].priority > skyPriorityMargin + LazySkyMargin)
                 {
-                    prevPrio = positions[0].priority;
+                    inSky = false;
                 }
-                else
+            }
+            else
+            {
+                if(positions[0].priority - positions[1].priority < skyPriorityMargin)
                 {
-                    if(Mathf.Abs(prevPrio-positions[i].priority)<skyPriorityMargin)
-                    {
-                        prevPrio = positions[i].priority;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                    if(i==1)
-                    {
-                        sky = true;
-                        break;
-                    }
+                    inSky = true;
                 }
             }
 
             int val = 0;
             foreach(var el in positions)
             {
-                print("pos "+val+", priority: " + el.priority + ", pos: " + el.movement.pos); //debug
+                print("pos "+val+", priority: " + el.priority + ", pos: " + el.pos); //debug
                 val++;
             }
 
-            if(sky)
+            if(inSky)
             {
                 cam.transform.position = Vector3.MoveTowards(cam.transform.position, skyView.position, Time.deltaTime * CamSpeed);
             }
             else
             {
-                cam.transform.position = Vector3.MoveTowards(cam.transform.position, positions[0].movement.pos, Time.deltaTime * CamSpeed);
+                cam.transform.position = Vector3.MoveTowards(cam.transform.position, positions[0].pos, Time.deltaTime * CamSpeed);
             }
 
         //    var bestBall = mainBall;
@@ -102,10 +123,12 @@ public class CameraManager : MonoBehaviour
          //   }
 
 
-            var targetRotation = Quaternion.LookRotation(positions[0].movement.look.transform.position - cam.transform.position);
+
+
+            var targetRotation = Quaternion.LookRotation(GetBestLookPos() - cam.transform.position);
             //var targetRotation = Quaternion.LookRotation(bestBall.transform.position - cam.transform.position);
 
-            cam.transform.rotation = Quaternion.Slerp(cam.transform.rotation, targetRotation, 2 * Time.deltaTime);
+            cam.transform.rotation = Quaternion.Slerp(cam.transform.rotation, targetRotation, 5 * Time.deltaTime);
 
             //cam.transform.LookAt(positions[0].movement.look.transform.position);
         }

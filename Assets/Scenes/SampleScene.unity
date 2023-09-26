@@ -3206,7 +3206,8 @@ MonoBehaviour:
   cam: {fileID: 963194227}
   CamSpeed: 10
   skyView: {fileID: 480002689}
-  skyPriorityMargin: 10
+  skyPriorityMargin: 25
+  LazySkyMargin: 5
   mainBall: {fileID: 1137021058}
   BallGameObj: {fileID: 1578094088}
   Active: 0
@@ -4766,7 +4767,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8772974399908723561, guid: 34f569f454d7cb34498420de2fce11e0, type: 3}
+    - {fileID: 5534711694132152322, guid: 34f569f454d7cb34498420de2fce11e0, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

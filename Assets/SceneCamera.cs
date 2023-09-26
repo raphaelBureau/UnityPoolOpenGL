@@ -12,15 +12,15 @@ public class SceneCamera : MonoBehaviour
 
     List<GameObject> balls;
 
-    [SerializeField] float velocityFactor = 40f; //determine si une balle qui bouge vaut plus que deux balles qui bougent moins
-    [SerializeField] float yVelocityFactor = 20f; //favorise une balle qui tombe
+    [SerializeField] float velocityFactor = 1f; //determine si une balle qui bouge vaut plus que deux balles qui bougent moins
+    [SerializeField] float yVelocityFactor = 5f; //favorise une balle qui tombe
     [SerializeField] float viewDistanceFactor = 5f; //favorise une position de camera plus proche de laction
 
     int nbBalles;
 
     public float Priority
     {
-        get { return nbBalles + TotalVelocity * velocityFactor; }
+        get { return TotalVelocity; }
     }
     public float TotalVelocity
     {
@@ -95,25 +95,18 @@ public class SceneCamera : MonoBehaviour
     /// le int est le nombre de boules en focus
     /// </summary>
     /// <returns></returns>
-     public ((Vector3 position,GameObject ball) pos,float priority) GetBestCamera()
+     public (Vector3 pos,float priority) GetBestCamera()
       {
         float priority = -999;
         Vector3 pos = transform.position + Vector3.up*4;
-        GameObject ball = BestBall;
         foreach(var el in points)
         {
-            float viewDist = Mathf.Abs((pos - el.BestBall.transform.position).magnitude) * viewDistanceFactor;
-            if (priority<el.Priority - viewDist)
+            if (priority<el.Priority)
             {
-                priority = Priority - viewDist;
-                ball = el.BestBall;
+                priority = Priority;
             }
         }
-        if((pos - ball.transform.position).magnitude < 7)
-        {
-            pos += Vector3.up * 3;
-        }
-        return ((pos,ball), priority);
+        return (pos, priority);
       }
     private void OnTriggerEnter(Collider other)
     {
