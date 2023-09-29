@@ -1,19 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CameraManager : MonoBehaviour
 {
     // Start is called before the first frame update
     SceneCamera[] cams;
     [SerializeField] Camera cam;
+    [SerializeField] Camera topCam;
     [SerializeField] float CamSpeed = 10f;
     [SerializeField] Transform skyView;
     [SerializeField] float skyPriorityMargin = 20f;
     [SerializeField] float LazySkyMargin = 5f;
     [SerializeField] GameObject mainBall;
 
+    //ui
+    [SerializeField] Image CamControlBackground;
+    
+
     bool inSky = false;
+    public bool InUI = false;
+    bool fixedCam = false; //false = dynamic, true = fixed
     //temp
     [SerializeField] GameObject BallGameObj;
     List<GameObject> ballList; //si ca bouge pus cest le temps de controller la boulle
@@ -22,10 +30,20 @@ public class CameraManager : MonoBehaviour
     {
         get { return cam; }
     }
+    public Camera TopCam
+    {
+        get { return topCam; }
+    }
 
     public bool Active; //daddy gameManager controle ca
     void Start()
     {
+        cam.enabled = true;
+        topCam.enabled = false;
+        fixedCam = false;
+        InUI = false;
+        CamControlBackground.color = new Color(0.6f, 0.6f, 0.6f, 0.5f);
+
         Active = false;
         cams = transform.GetComponentsInChildren<SceneCamera>();
         inSky = false;
@@ -97,12 +115,12 @@ public class CameraManager : MonoBehaviour
                 }
             }
 
-            int val = 0;
-            foreach(var el in positions)
-            {
-                print("pos "+val+", priority: " + el.priority + ", pos: " + el.pos); //debug
-                val++;
-            }
+    //        int val = 0;
+    //        foreach(var el in positions)
+     //       {
+      //          print("pos "+val+", priority: " + el.priority + ", pos: " + el.pos); //debug
+      //          val++;
+      //      }
 
             if(inSky)
             {
@@ -131,6 +149,57 @@ public class CameraManager : MonoBehaviour
             cam.transform.rotation = Quaternion.Slerp(cam.transform.rotation, targetRotation, 5 * Time.deltaTime);
 
             //cam.transform.LookAt(positions[0].movement.look.transform.position);
+        }
+    }
+
+    public void ToggleCam()
+    {
+        Color red = new Color(1, 0.1f, 0.1f, 0.5f);
+        Color grey = new Color(0.6f, 0.6f, 0.6f, 0.5f);
+        cam.enabled = topCam.enabled;
+        topCam.enabled = !cam.enabled;
+        if (!cam.enabled)
+        {
+            CamControlBackground.color = red;
+            fixedCam = true;
+        }
+        else
+        {
+            CamControlBackground.color = grey;
+            fixedCam = false;
+        }
+    }
+
+    public void ToggleCamEnter()
+    {
+        Color solid = CamControlBackground.color;
+        solid.a = 1f;
+        CamControlBackground.color = solid;
+        InUI = true;
+    }
+    public void ToggleCamExit()
+    { //fulcrum come in
+        Color faded = CamControlBackground.color;
+        faded.a = 0.5f;
+        CamControlBackground.color = faded;
+        InUI = false;
+    }
+    public void LockTop()
+    {
+        CamControlBackground.gameObject.SetActive(false);
+        if (!fixedCam)
+        {
+            cam.enabled = false;
+            topCam.enabled = true;
+        }
+    }
+    public void UnlockTop()
+    {
+        CamControlBackground.gameObject.SetActive(true);
+        if(!fixedCam)
+        {
+            cam.enabled = true;
+            topCam.enabled = false;
         }
     }
 }
