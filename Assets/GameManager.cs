@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -10,6 +12,9 @@ public class GameManager : MonoBehaviour
     List<GameObject> ballList; //si ca bouge pus cest le temps de controller la boulle
     [SerializeField] GameObject mainBall;
     [SerializeField] GameObject trajectory;
+
+    [SerializeField] GameObject player1Display;
+    [SerializeField] GameObject player2Display;
 
     (bool left, bool right) mouseClick;
     (bool left, bool right) prevMouseClick;
@@ -23,8 +28,22 @@ public class GameManager : MonoBehaviour
     bool placingMainBall = false;
     bool mainBallFell = false;
 
+    bool playerTurn = false; //false = player 1, true = player 2;
+    bool playAgain = false; //si un point = true
+
+    bool firstBallFell = false;
+    bool player1Solid;
+
+    int player1Points = 0;
+    int player2Points = 0;
+
     void Start()
     {
+        playerTurn = false;
+        playAgain = false;
+        player1Points = 0;
+        player2Points = 0;
+        firstBallFell = false;
         //initialisation du jeu
         mainBallFell = false;
         placingMainBall = false;
@@ -38,6 +57,8 @@ public class GameManager : MonoBehaviour
         {
             ballList.Add(BallGameObj.transform.GetChild(i).gameObject);
         }
+
+        UpdateProfiles();
     }
 
     // Update is called once per frame
@@ -104,6 +125,7 @@ public class GameManager : MonoBehaviour
                     {//firrre!!!
                         mainBall.GetComponent<Rigidbody>().velocity = new Vector3(CM.Cam.transform.forward.x, 0, CM.Cam.transform.forward.z).normalized * hitStrenght;
                         trajectory.GetComponent<MeshRenderer>().enabled = false;
+                        playAgain = false;
                         playing = false;
                         CM.Active = true;
                     }
@@ -153,7 +175,12 @@ public class GameManager : MonoBehaviour
             }
             if(!Moved)
             {
-                if(mainBallFell)
+                if (mainBallFell || !playAgain)
+                {
+                    playerTurn = !playerTurn;
+                }
+                UpdateProfiles();
+                if (mainBallFell)
                 {
                     PlaceMainBall();
                     mainBallFell = false;
@@ -174,5 +201,117 @@ public class GameManager : MonoBehaviour
     public void RequestMainBallPlacement() //call par mainball script quand son y est < -2
     {
         mainBallFell = true;
+    }
+
+    public void BallFell(int ballNo,bool solidColor)
+    {
+            if(ballNo == 8)
+            {//game over
+                return;
+            }
+            else
+            {
+                if(!firstBallFell)
+                {
+                    firstBallFell = true;
+
+                    if(!playerTurn)
+                    {//player 1
+                        player1Solid = solidColor;
+                        player1Points++;
+                   
+                    }
+                    else
+                    {//player 2
+                        player1Solid = !solidColor;
+                        player2Points++;
+                    }
+                playAgain = true;
+                UpdateProfiles();
+                    return;
+                }
+
+                if(solidColor)
+                {
+                    if(player1Solid) {
+                        player1Points++;
+
+                        if(!playerTurn)
+                        {
+                            playAgain = true;
+                        }
+                    }
+                    else
+                    {
+                        player2Points++;
+
+                        if (playerTurn)
+                        {
+                            playAgain = true;
+                        }
+                    }
+                }
+                else //pas solid
+                {
+                    if (!player1Solid)
+                    {
+                        player1Points++;
+
+                        if (!playerTurn)
+                        {
+                            playAgain = true;
+                        }
+                    }
+                    else
+                    {
+                        player2Points++;
+
+                        if (playerTurn)
+                        {
+                            playAgain = true;
+                        }
+                    }
+                }
+            }
+        UpdateProfiles();
+    }
+
+    void UpdateProfiles()
+    {
+        if (!playerTurn)
+        {
+
+            player1Display.GetComponent<Image>().color = new Color(0.8f, 0.6f, 0.6f, 0.7f);
+        }
+        else
+        {
+            player1Display.GetComponent<Image>().color = new Color(0.6f, 0.6f, 0.6f, 0.5f);
+        }
+        TextMeshProUGUI[] text1 = player1Display.GetComponentsInChildren<TextMeshProUGUI>(); //lenght 3, 0= nom, 1= score, 2 = balltype
+
+        text1[1].text = "Score: " + player1Points;
+
+        if (firstBallFell)
+        {
+            text1[2].text = player1Solid ? "Solide" : "Rayé";
+        }
+
+        if (playerTurn)
+        {
+            player2Display.GetComponent<Image>().color = new Color(0.8f, 0.6f, 0.6f, 0.7f);
+
+        }
+        else
+        {
+            player2Display.GetComponent<Image>().color = new Color(0.6f, 0.6f, 0.6f, 0.5f);
+        }
+        TextMeshProUGUI[] text2 = player2Display.GetComponentsInChildren<TextMeshProUGUI>(); //lenght 3, 0= nom, 1= score, 2 = balltype
+
+        text2[1].text = "Score: " + player2Points;
+
+        if (firstBallFell)
+        {
+            text2[2].text = player1Solid ? "Rayé" : "Solide";
+        }
     }
 }
