@@ -13,6 +13,13 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject mainBall;
     [SerializeField] GameObject trajectory;
 
+    public List<GameObject> BallList
+    {
+        get { return ballList; } //lencalplsulation
+    }
+
+    public bool sendPackets;
+
     [SerializeField] GameObject player1Display;
     [SerializeField] GameObject player2Display;
 

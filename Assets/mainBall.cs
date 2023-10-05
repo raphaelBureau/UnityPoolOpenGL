@@ -25,7 +25,7 @@ public class mainBall : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        print("trigger empty: " + triggerEmpty);
+      //  print("trigger empty: " + triggerEmpty);
         triggerEmpty = true;
         if(transform.position.y <-2)
         {
@@ -44,6 +44,7 @@ public class mainBall : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         count++;
+        triggerEmpty = false; //peut etre un fix ??
        
     }
     private void OnTriggerExit(Collider other)
