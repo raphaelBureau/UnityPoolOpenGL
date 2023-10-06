@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static ballScript;
 
 public class mainBall : MonoBehaviour
 {
@@ -27,13 +28,21 @@ public class mainBall : MonoBehaviour
     {
       //  print("trigger empty: " + triggerEmpty);
         triggerEmpty = true;
-        if(transform.position.y <-2)
+        if (!GM.Multiplayer || GM.sendPackets)
         {
-            GM.RequestMainBallPlacement();
-            gameObject.SetActive(false);
-            transform.position = new Vector3(0, 2, 0);
-            gameObject.GetComponent<Collider>().enabled = false;
-            gameObject.GetComponent<Rigidbody>().isKinematic = true;
+            if (transform.position.y < -2)
+            {
+                GM.RequestMainBallPlacement();
+                gameObject.SetActive(false);
+                transform.position = new Vector3(0, 2, 0);
+                gameObject.GetComponent<Collider>().enabled = false;
+                gameObject.GetComponent<Rigidbody>().isKinematic = true;
+
+                if (GM.Multiplayer)
+                {
+                    GM.Net.SendBallData(new BallData(0, gameObject.activeSelf, false));
+                }
+            }
         }
        
     }

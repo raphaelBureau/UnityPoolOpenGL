@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using static ballScript;
 
 public class GameManager : MonoBehaviour
 {
@@ -12,13 +13,24 @@ public class GameManager : MonoBehaviour
     List<GameObject> ballList; //si ca bouge pus cest le temps de controller la boulle
     [SerializeField] GameObject mainBall;
     [SerializeField] GameObject trajectory;
+    [SerializeField] Networking net;
+
+    public Networking Net
+    {
+        get { return net; }
+    }
 
     public List<GameObject> BallList
     {
         get { return ballList; } //lencalplsulation
     }
 
-    public bool sendPackets;
+    public bool sendPackets = false;
+
+    public bool Multiplayer
+    {
+        get { return multiplayer; }
+    }
 
     [SerializeField] GameObject player1Display;
     [SerializeField] GameObject player2Display;
@@ -31,6 +43,50 @@ public class GameManager : MonoBehaviour
     Resolution screen;
 
     bool playing;
+
+    bool multiplayer = false;
+    public void EnableMultiplayer(bool first)
+    {
+        multiplayer = true;
+        sendPackets = first;
+        playerTurn = !first;
+        CM.Active = !first;
+        UpdateProfiles();
+        if(!first)
+        {
+            trajectory.GetComponent<MeshRenderer>().enabled = false;
+        }
+    }
+
+    public void OtherPlayerPlayRequest()
+    {
+        CM.Active = false;
+        sendPackets = true;
+        trajectory.GetComponent<MeshRenderer>().enabled = false;
+    }
+
+    public void UpdateBalls(BallData ball)
+    {
+        if (ball.id == 0) //main ball
+        {
+            if (!ball.collisions)
+            {
+                mainBall.SetActive(true);
+                mainBall.GetComponent<Collider>().isTrigger = true;
+                mainBall.GetComponent<Collider>().enabled = true;
+            }
+            else
+            {
+                mainBall.GetComponent<Collider>().isTrigger = false;
+                mainBall.GetComponent<Collider>().enabled = true;
+            }
+        }
+        else
+        {
+            ballList[ball.id - 1].SetActive(ball.active);
+            BallFell(ball.id, ball.id <= 8);
+        }
+    }
 
     bool placingMainBall = false;
     bool mainBallFell = false;
@@ -46,6 +102,8 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        sendPackets = false;
+        multiplayer = false;
         playerTurn = false;
         playAgain = false;
         player1Points = 0;
@@ -71,7 +129,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (placingMainBall)
+        if (placingMainBall && (!multiplayer || sendPackets))
         {
             print("raycasting moment");
             RaycastHit hit;
@@ -169,7 +227,7 @@ public class GameManager : MonoBehaviour
     }
     private void FixedUpdate() //check la velocite donc fixedupdate
     {
-        if(CM.Active)
+        if(CM.Active && (!multiplayer || sendPackets))
         {
             bool Moved = false;
             foreach(var ball in ballList)
@@ -182,17 +240,26 @@ public class GameManager : MonoBehaviour
             }
             if(!Moved)
             {
-                if (mainBallFell || !playAgain)
+                if (multiplayer && !playAgain)
                 {
-                    playerTurn = !playerTurn;
+                    net.GiveOtherPlayerControl();
+                    UpdateProfiles();
+                    sendPackets = false;
                 }
-                UpdateProfiles();
-                if (mainBallFell)
+                else
                 {
-                    PlaceMainBall();
-                    mainBallFell = false;
+                    if (mainBallFell || !playAgain)
+                    {
+                        playerTurn = !playerTurn;
+                    }
+                    UpdateProfiles();
+                    if (mainBallFell)
+                    {
+                        PlaceMainBall();
+                        mainBallFell = false;
+                    }
+                    CM.Active = false;
                 }
-                CM.Active = false;
             }
         }
     }

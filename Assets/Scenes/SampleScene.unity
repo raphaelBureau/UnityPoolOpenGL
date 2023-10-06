@@ -3682,6 +3682,8 @@ MonoBehaviour:
   BallGameObj: {fileID: 1578094088}
   mainBall: {fileID: 1137021058}
   trajectory: {fileID: 1062133162}
+  net: {fileID: 963194229}
+  sendPackets: 0
   player1Display: {fileID: 787721132}
   player2Display: {fileID: 882554387}
 --- !u!4 &1188322062

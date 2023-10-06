@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using KyleDulce.SocketIo;
+using static ballScript;
 
 public class Networking : MonoBehaviour
 {
@@ -9,8 +10,11 @@ public class Networking : MonoBehaviour
     Socket socket;
     [SerializeField] GameManager GM;
 
+    int frameCounter = 0;
+
     void Start()
     {
+        frameCounter = 0;
         socket = SocketIo.establishSocketConnection("ws://127.0.0.1:3000");
         socket.connect();
 
@@ -22,8 +26,18 @@ public class Networking : MonoBehaviour
         socket.on("gameStart", (first) =>
         {
             print("connected");
-            GM.sendPackets = bool.Parse(first); //who is playing first?
+            GM.EnableMultiplayer(bool.Parse(first));
             Time.timeScale = 1; //play game;
+        });
+
+        socket.on("control", (args) =>
+        {
+            GM.OtherPlayerPlayRequest();
+        });
+
+        socket.on("updateBalls", (args) =>
+        {
+            GM.UpdateBalls(JsonUtility.FromJson<BallData>(args));
         });
 
 
@@ -50,7 +64,8 @@ public class Networking : MonoBehaviour
     }
     private void FixedUpdate() //envoyer la physique
     {
-        if (GM.sendPackets && socket.connected)
+
+        if (GM.sendPackets && socket.connected && frameCounter%5 ==0)
         {
             List<GameObject> balls = GM.BallList;
 
@@ -73,10 +88,25 @@ public class Networking : MonoBehaviour
             
             socket.emit("sendPos", JsonUtility.ToJson(pos));
         }
+        frameCounter++;
+        if(frameCounter > 10000)
+        {
+            frameCounter = 0;
+        }
     }
     [System.Serializable]
     public class Position
     {
         public float[] data;
+    }
+
+    public void GiveOtherPlayerControl()
+    {
+        socket.emit("giveControl", "wasd");
+    }
+
+    public void SendBallData(BallData data)
+    {
+        socket.emit("updateBalls", JsonUtility.ToJson(data));
     }
 }

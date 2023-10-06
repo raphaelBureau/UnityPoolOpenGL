@@ -44,7 +44,7 @@ public class CameraManager : MonoBehaviour
         InUI = false;
         CamControlBackground.color = new Color(0.6f, 0.6f, 0.6f, 0.5f);
 
-        Active = false;
+        Active = true;
         cams = transform.GetComponentsInChildren<SceneCamera>();
         inSky = false;
 
@@ -66,7 +66,7 @@ public class CameraManager : MonoBehaviour
         {
             if(ball.activeSelf) { 
             float vel = ball.GetComponent<Rigidbody>().velocity.magnitude;
-            if(vel > 0)
+            if(vel > 0.05)
             {
                 fastBalls.Add((vel, ball.transform.position));
                 totalVel += vel;
