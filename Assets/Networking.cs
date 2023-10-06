@@ -65,7 +65,7 @@ public class Networking : MonoBehaviour
     private void FixedUpdate() //envoyer la physique
     {
 
-        if (GM.sendPackets && socket.connected && frameCounter%5 ==0)
+        if (GM.sendPackets && socket.connected && frameCounter%10 ==0)
         {
             List<GameObject> balls = GM.BallList;
 

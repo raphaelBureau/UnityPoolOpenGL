@@ -63,6 +63,11 @@ public class GameManager : MonoBehaviour
         CM.Active = false;
         sendPackets = true;
         trajectory.GetComponent<MeshRenderer>().enabled = false;
+
+        if(mainBallFell)
+        {
+            PlaceMainBall();
+        }
     }
 
     public void UpdateBalls(BallData ball)
@@ -71,14 +76,22 @@ public class GameManager : MonoBehaviour
         {
             if (!ball.collisions)
             {
-                mainBall.SetActive(true);
+                mainBall.SetActive(ball.active);
                 mainBall.GetComponent<Collider>().isTrigger = true;
                 mainBall.GetComponent<Collider>().enabled = true;
+                gameObject.GetComponent<Rigidbody>().isKinematic = true;
             }
             else
             {
+                mainBall.SetActive(ball.active);
                 mainBall.GetComponent<Collider>().isTrigger = false;
                 mainBall.GetComponent<Collider>().enabled = true;
+                gameObject.GetComponent<Rigidbody>().isKinematic = false;
+            }
+            if(!ball.active) //si le gameobject est disabled la balle est tombe dans un trou donc le joueur doit la placer au prochain tour
+            {
+                mainBallFell = true;
+                mainBall.GetComponent<mainBall>().placing = true;
             }
         }
         else
@@ -149,6 +162,12 @@ public class GameManager : MonoBehaviour
                         mainBall.GetComponent<Rigidbody>().isKinematic = false;
                         CM.UnlockTop();
                         placingMainBall = false;
+
+                        if(multiplayer)
+                        {
+                            net.SendBallData(new BallData(0, true, true));
+                            mainBall.GetComponent<mainBall>().placing = false;
+                        }
 
                     }
                 }
@@ -271,6 +290,12 @@ public class GameManager : MonoBehaviour
         mainBall.SetActive(true);
         mainBall.GetComponent<Collider>().isTrigger = true;
         mainBall.GetComponent<Collider>().enabled = true;
+        gameObject.GetComponent<Rigidbody>().isKinematic = true;
+
+        if (multiplayer)
+        {
+            net.SendBallData(new BallData(0, true, false));
+        }
     }
     public void RequestMainBallPlacement() //call par mainball script quand son y est < -2
     {
