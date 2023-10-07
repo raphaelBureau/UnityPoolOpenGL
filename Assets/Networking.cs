@@ -65,28 +65,9 @@ public class Networking : MonoBehaviour
     private void FixedUpdate() //envoyer la physique
     {
 
-        if (GM.sendPackets && socket.connected && frameCounter%10 ==0)
+        if (GM.sendPackets && socket.connected && frameCounter%20 ==0)
         {
-            List<GameObject> balls = GM.BallList;
-
-            var pos = new Position();
-
-            pos.data = new float[balls.Count * 6];
-            int ball = 0;
-            for(int i =0;i< pos.data.Length;i+=6)
-            {
-                pos.data[i] = balls[ball].transform.position.x;
-                pos.data[i+1] = balls[ball].transform.position.y;
-                pos.data[i+2] = balls[ball].transform.position.z;
-                pos.data[i+3] = balls[ball].GetComponent<Rigidbody>().velocity.x;
-                pos.data[i+4] = balls[ball].GetComponent<Rigidbody>().velocity.y;
-                pos.data[i+5] = balls[ball].GetComponent<Rigidbody>().velocity.z;
-
-                ball++;
-            }
-           // print(JsonUtility.ToJson(pos));
-            
-            socket.emit("sendPos", JsonUtility.ToJson(pos));
+            UpdateAllBalls();
         }
         frameCounter++;
         if(frameCounter > 10000)
@@ -108,5 +89,31 @@ public class Networking : MonoBehaviour
     public void SendBallData(BallData data)
     {
         socket.emit("updateBalls", JsonUtility.ToJson(data));
+     //   print("sent data: " + JsonUtility.ToJson(data));
     }
+    public void UpdateAllBalls()
+    {
+        List<GameObject> balls = GM.BallList;
+
+        var pos = new Position();
+
+        pos.data = new float[balls.Count * 6];
+        int ball = 0;
+        for (int i = 0; i < pos.data.Length; i += 6)
+        {
+            pos.data[i] = balls[ball].transform.position.x;
+            pos.data[i + 1] = balls[ball].transform.position.y;
+            pos.data[i + 2] = balls[ball].transform.position.z;
+            pos.data[i + 3] = balls[ball].GetComponent<Rigidbody>().velocity.x;
+            pos.data[i + 4] = balls[ball].GetComponent<Rigidbody>().velocity.y;
+            pos.data[i + 5] = balls[ball].GetComponent<Rigidbody>().velocity.z;
+
+            ball++;
+        }
+        // print(JsonUtility.ToJson(pos));
+
+        socket.emit("sendPos", JsonUtility.ToJson(pos));
+        //    print("sent position: " + JsonUtility.ToJson(pos));
+    }
+
 }

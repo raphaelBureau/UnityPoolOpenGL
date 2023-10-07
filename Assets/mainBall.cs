@@ -29,26 +29,17 @@ public class mainBall : MonoBehaviour
     private void FixedUpdate()
     {
       //  print("trigger empty: " + triggerEmpty);
-        triggerEmpty = true;
-        if (!GM.Multiplayer || GM.sendPackets && !placing)
-        {
-            if (transform.position.y < -2)
+        triggerEmpty = true; //pour placer la balle
+
+            if (GM.sendPackets && transform.position.y < -2 && !placing)
             {
                 
                 gameObject.SetActive(false);
                 transform.position = new Vector3(0, 2, 0);
                 gameObject.GetComponent<Collider>().enabled = false;
                 gameObject.GetComponent<Rigidbody>().isKinematic = true;
-
-                if (GM.Multiplayer)
-                {
-                    GM.Net.SendBallData(new BallData(0, gameObject.activeSelf, false));
-                }
-                else
-                {
-                    GM.RequestMainBallPlacement();
-                }
-            }
+                GM.mainBallNoReplay = true;
+                GM.Net.SendBallData(new BallData(0, false, false)); //dire a lautre joueur de placer la balle main (id=0)
         }
        
     }
@@ -59,7 +50,7 @@ public class mainBall : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         count++;
-        triggerEmpty = false; //peut etre un fix ??
+        triggerEmpty = false; //peut etre un fix ?? (non)
        
     }
     private void OnTriggerExit(Collider other)

@@ -49,22 +49,21 @@ public class GameManager : MonoBehaviour
     {
         multiplayer = true;
         sendPackets = first;
-        playerTurn = !first;
         CM.Active = !first;
         UpdateProfiles();
         if(!first)
         {
-            trajectory.GetComponent<MeshRenderer>().enabled = false;
+            trajectory.GetComponent<MeshRenderer>().enabled = false; //on veut pas voir le trajectory (peut etre que plus tard on pourra send le trajectory au autres joueurs)
         }
     }
 
-    public void OtherPlayerPlayRequest()
+    public void OtherPlayerPlayRequest() //resume la partie, assume que chaque balle a cessé de bouger
     {
         CM.Active = false;
         sendPackets = true;
-        trajectory.GetComponent<MeshRenderer>().enabled = false;
-
-        if(mainBallFell)
+        playerTurn = !playerTurn;
+        UpdateProfiles();
+        if (mainBallFell)
         {
             PlaceMainBall();
         }
@@ -72,31 +71,31 @@ public class GameManager : MonoBehaviour
 
     public void UpdateBalls(BallData ball)
     {
+        print("update ball id:" + ball.id + " active: " + ball.active + " collisions: " + ball.collisions);
         if (ball.id == 0) //main ball
         {
-            if (!ball.collisions)
-            {
-                mainBall.SetActive(ball.active);
-                mainBall.GetComponent<Collider>().isTrigger = true;
-                mainBall.GetComponent<Collider>().enabled = true;
-                gameObject.GetComponent<Rigidbody>().isKinematic = true;
-            }
-            else
+            if (ball.collisions) //si collisions, la balle est placée, sinon, elle est en placement du joueur
             {
                 mainBall.SetActive(ball.active);
                 mainBall.GetComponent<Collider>().isTrigger = false;
                 mainBall.GetComponent<Collider>().enabled = true;
-                gameObject.GetComponent<Rigidbody>().isKinematic = false;
+                mainBall.GetComponent<Rigidbody>().isKinematic = false;
+            }
+            else
+            {
+                mainBall.SetActive(ball.active);
+                mainBall.GetComponent<Collider>().isTrigger = true;
+                mainBall.GetComponent<Collider>().enabled = true;
+                mainBall.GetComponent<Rigidbody>().isKinematic = true;
             }
             if(!ball.active) //si le gameobject est disabled la balle est tombe dans un trou donc le joueur doit la placer au prochain tour
             {
                 mainBallFell = true;
-                mainBall.GetComponent<mainBall>().placing = true;
             }
         }
         else
-        {
-            ballList[ball.id - 1].SetActive(ball.active);
+        {//balle normalle 
+            ballList[ball.id].SetActive(ball.active);
             BallFell(ball.id, ball.id <= 8);
         }
     }
@@ -107,6 +106,8 @@ public class GameManager : MonoBehaviour
     bool playerTurn = false; //false = player 1, true = player 2;
     bool playAgain = false; //si un point = true
 
+    public bool mainBallNoReplay = false; 
+
     bool firstBallFell = false;
     bool player1Solid;
 
@@ -115,6 +116,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        mainBallNoReplay = false;
         sendPackets = false;
         multiplayer = false;
         playerTurn = false;
@@ -134,6 +136,7 @@ public class GameManager : MonoBehaviour
         for(int i = 0; i<nbBoules;i++)
         {
             ballList.Add(BallGameObj.transform.GetChild(i).gameObject);
+          //  print("balllist id: " + i + " name: " + ballList[i].name);
         }
 
         UpdateProfiles();
@@ -142,8 +145,9 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (placingMainBall && (!multiplayer || sendPackets))
+        if (placingMainBall && sendPackets)
         {
+            net.SendBallData(new BallData(0, true, false)); //
             print("raycasting moment");
             RaycastHit hit;
             Ray ray = CM.TopCam.ScreenPointToRay(Input.mousePosition);
@@ -157,17 +161,17 @@ public class GameManager : MonoBehaviour
                     mainBall.GetComponent<Renderer>().material.color = new Color(1f, 1f, 1f);
                     if (Input.GetMouseButton(0))
                     {
+
                         mainBall.layer = 8;
                         mainBall.GetComponent<Collider>().isTrigger = false;
                         mainBall.GetComponent<Rigidbody>().isKinematic = false;
                         CM.UnlockTop();
                         placingMainBall = false;
 
-                        if(multiplayer)
-                        {
-                            net.SendBallData(new BallData(0, true, true));
-                            mainBall.GetComponent<mainBall>().placing = false;
-                        }
+                        Net.UpdateAllBalls();
+                        net.SendBallData(new BallData(0, true, true));
+                        mainBall.GetComponent<mainBall>().placing = false;
+                        mainBallFell = false;
 
                     }
                 }
@@ -212,6 +216,7 @@ public class GameManager : MonoBehaviour
                         playAgain = false;
                         playing = false;
                         CM.Active = true;
+                        Net.UpdateAllBalls();
                     }
 
                     prevMouseClick = mouseClick;
@@ -246,38 +251,28 @@ public class GameManager : MonoBehaviour
     }
     private void FixedUpdate() //check la velocite donc fixedupdate
     {
-        if(CM.Active && (!multiplayer || sendPackets))
+        if(CM.Active && sendPackets)
         {
             bool Moved = false;
             foreach(var ball in ballList)
             {
                 if(ball.GetComponent<Rigidbody>().velocity.magnitude > 0.05 && ball.activeSelf) //minimum acceptable movement
                 {
-                    
                     Moved = true;
                 }
             }
             if(!Moved)
             {
-                if (multiplayer && !playAgain)
+                if (playAgain && !mainBallNoReplay)
                 {
-                    net.GiveOtherPlayerControl();
-                    UpdateProfiles();
-                    sendPackets = false;
+                    CM.Active = false;
                 }
                 else
                 {
-                    if (mainBallFell || !playAgain)
-                    {
-                        playerTurn = !playerTurn;
-                    }
+                    playerTurn = !playerTurn;
+                    net.GiveOtherPlayerControl();
+                    sendPackets = false;
                     UpdateProfiles();
-                    if (mainBallFell)
-                    {
-                        PlaceMainBall();
-                        mainBallFell = false;
-                    }
-                    CM.Active = false;
                 }
             }
         }
@@ -290,16 +285,13 @@ public class GameManager : MonoBehaviour
         mainBall.SetActive(true);
         mainBall.GetComponent<Collider>().isTrigger = true;
         mainBall.GetComponent<Collider>().enabled = true;
-        gameObject.GetComponent<Rigidbody>().isKinematic = true;
+        mainBall.GetComponent<Rigidbody>().isKinematic = true;
+        mainBall.GetComponent<mainBall>().placing = true;
 
         if (multiplayer)
         {
             net.SendBallData(new BallData(0, true, false));
         }
-    }
-    public void RequestMainBallPlacement() //call par mainball script quand son y est < -2
-    {
-        mainBallFell = true;
     }
 
     public void BallFell(int ballNo,bool solidColor)

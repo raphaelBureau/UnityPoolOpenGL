@@ -31,26 +31,21 @@ public class ballScript : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        if (!GM.Multiplayer || GM.sendPackets)
-        {
-            if (transform.position.y < -2) //tombé
+            if (GM.sendPackets && transform.position.y < -2) //tombé
             {
                 GM.BallFell(BallNo, SolidColor);
                 gameObject.SetActive(false);
-
-                if(GM.Multiplayer)
-                {
-                    GM.Net.SendBallData(new BallData(ballNo, gameObject.activeSelf, false));
-                }
+                GM.Net.SendBallData(new BallData(ballNo, false, true)); //on laisse les collisions a true parceque lobjet est desactivé
+            print("send ball data id: " + ballNo + " not active, collisions enabled");
             }
-        }
+        
     }
     [System.Serializable]
     public class BallData
     {
-       public int id { get; private set; }
-       public bool active { get; private set; }
-        public bool collisions { get; private set; }
+        public int id;
+        public bool active; //important de ne pas set de proprietes parceque unity supporte pas ca en serializable
+        public bool collisions;
         public BallData(int id, bool active,bool collisions)
         {
             this.id = id; //mainball id = 16
