@@ -36,7 +36,7 @@ public class ballScript : MonoBehaviour
                 GM.BallFell(BallNo, SolidColor);
                 gameObject.SetActive(false);
                 GM.Net.SendBallData(new BallData(ballNo, false, true)); //on laisse les collisions a true parceque lobjet est desactivé
-            print("send ball data id: " + ballNo + " not active, collisions enabled");
+          //  print("send ball data id: " + ballNo + " not active, collisions enabled");
             }
         
     }

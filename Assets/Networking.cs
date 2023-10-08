@@ -15,7 +15,7 @@ public class Networking : MonoBehaviour
     void Start()
     {
         frameCounter = 0;
-        socket = SocketIo.establishSocketConnection("ws://127.0.0.1:3000");
+        socket = SocketIo.establishSocketConnection("ws://bureau.blue:3000");
         socket.connect();
 
         print("waiting for other player");
