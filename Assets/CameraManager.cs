@@ -11,13 +11,16 @@ public class CameraManager : MonoBehaviour
     [SerializeField] Camera topCam;
     [SerializeField] float CamSpeed = 10f;
     [SerializeField] Transform skyView;
-    [SerializeField] float skyPriorityMargin = 20f;
-    [SerializeField] float LazySkyMargin = 5f;
+    [SerializeField] Transform secondView;
+    [SerializeField] float skyPriorityMargin = 0.5f;
+    [SerializeField] float LazySkyMargin = 0.2f;
     [SerializeField] GameObject mainBall;
+
+    bool currentSky = false;
+
 
     //ui
     [SerializeField] Image CamControlBackground;
-    
 
     bool inSky = false;
     public bool InUI = false;
@@ -38,6 +41,7 @@ public class CameraManager : MonoBehaviour
     public bool Active; //daddy gameManager controle ca
     void Start()
     {
+        currentSky = false;
         cam.enabled = true;
         topCam.enabled = false;
         fixedCam = false;
@@ -115,16 +119,23 @@ public class CameraManager : MonoBehaviour
                 }
             }
 
-    //        int val = 0;
-    //        foreach(var el in positions)
-     //       {
-      //          print("pos "+val+", priority: " + el.priority + ", pos: " + el.pos); //debug
-      //          val++;
-      //      }
+            int val = 0;
+            foreach(var el in positions)
+            {
+                print("pos "+val+", priority: " + el.priority + ", pos: " + el.pos); //debug
+                val++;
+            }
 
             if(inSky)
             {
-                cam.transform.position = Vector3.MoveTowards(cam.transform.position, skyView.position, Time.deltaTime * CamSpeed);
+                if (currentSky)
+                {
+                    cam.transform.position = Vector3.MoveTowards(cam.transform.position, skyView.position, Time.deltaTime * CamSpeed);
+                }
+                else
+                {
+                    cam.transform.position = Vector3.MoveTowards(cam.transform.position, secondView.position, Time.deltaTime * CamSpeed);
+                }
             }
             else
             {

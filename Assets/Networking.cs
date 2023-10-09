@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using KyleDulce.SocketIo;
+using TMPro;
 using static ballScript;
 
 public class Networking : MonoBehaviour
@@ -9,22 +10,35 @@ public class Networking : MonoBehaviour
     // Start is called before the first frame update
     Socket socket;
     [SerializeField] GameManager GM;
+    [SerializeField] TextMeshProUGUI Message;
 
     int frameCounter = 0;
 
     void Start()
     {
+        Time.timeScale = 0;//stop and wait for player 2
         frameCounter = 0;
-        socket = SocketIo.establishSocketConnection("ws://bureau.blue:3000");
+        Message.text = "Connection au Serveur...";
+        socket = SocketIo.establishSocketConnection("ws://127.0.0.1:3000");
         socket.connect();
-
-        print("waiting for other player");
+ 
+        Message.text = "En attente d'un autre joueur";
         socket.emit("joinGame", "pool"); //send connection request
 
-        Time.timeScale = 0;//stop and wait for player 2
+        socket.on("connect_error", (arg) => {
+            Message.text = "Erreur de connection";
+        });
+
+        socket.on("playerLeave", (arg) =>
+        {
+            Message.text = "l'adversaire a quitté";
+            print("player left");
+            Time.timeScale = 0;
+        });
 
         socket.on("gameStart", (first) =>
         {
+            Message.text = "";
             print("connected");
             GM.EnableMultiplayer(bool.Parse(first));
             Time.timeScale = 1; //play game;
@@ -40,10 +54,21 @@ public class Networking : MonoBehaviour
             GM.UpdateBalls(JsonUtility.FromJson<BallData>(args));
         });
 
+        socket.on("updateTrajectory", (arg) =>
+        {
+
+        });
+
 
         socket.on("positions", (res) => //array 6 * length , [x,y,z, velX, velY, velZ]  i+=6;
         {
          //print(res);
+
+            if(GM.Trajectory.activeSelf)
+            {
+                GM.Trajectory.SetActive(false);
+            }
+ 
             Position pos = JsonUtility.FromJson<Position>(res);
             
             List<GameObject> balls = GM.BallList;
@@ -56,6 +81,21 @@ public class Networking : MonoBehaviour
                 ball++;
             }
         });
+
+        socket.on("trajectory", (trajectory) =>
+        {
+            Trajectory traj = JsonUtility.FromJson<Trajectory>(trajectory);
+
+            if(!GM.Trajectory.activeSelf)
+            {
+                GM.Trajectory.SetActive(true);
+            }
+
+            GM.Trajectory.transform.position = traj.position;
+            GM.Trajectory.transform.localScale = traj.scale;
+            GM.Trajectory.GetComponent<MeshRenderer>().material.mainTextureScale = traj.texture;
+            GM.Trajectory.transform.rotation = traj.rotation;
+        });
     }
 
     // Update is called once per frame
@@ -65,20 +105,22 @@ public class Networking : MonoBehaviour
     private void FixedUpdate() //envoyer la physique
     {
 
-        if (GM.sendPackets && socket.connected && frameCounter%20 ==0)
+        if (GM.sendPackets && socket.connected)
         {
-            UpdateAllBalls();
+            if (GM.Playing && frameCounter % 5 ==0)
+            {
+                UpdateTrajectory();
+            }
+            if (!GM.Playing && frameCounter % 30 == 0)
+            {
+                UpdateAllBalls();
+            }
         }
         frameCounter++;
         if(frameCounter > 10000)
         {
             frameCounter = 0;
         }
-    }
-    [System.Serializable]
-    public class Position
-    {
-        public float[] data;
     }
 
     public void GiveOtherPlayerControl()
@@ -101,12 +143,15 @@ public class Networking : MonoBehaviour
         int ball = 0;
         for (int i = 0; i < pos.data.Length; i += 6)
         {
-            pos.data[i] = balls[ball].transform.position.x;
-            pos.data[i + 1] = balls[ball].transform.position.y;
-            pos.data[i + 2] = balls[ball].transform.position.z;
-            pos.data[i + 3] = balls[ball].GetComponent<Rigidbody>().velocity.x;
-            pos.data[i + 4] = balls[ball].GetComponent<Rigidbody>().velocity.y;
-            pos.data[i + 5] = balls[ball].GetComponent<Rigidbody>().velocity.z;
+            Vector3 position = balls[ball].transform.position;
+            Vector3 vel = balls[ball].GetComponent<Rigidbody>().velocity;
+    
+            pos.data[i] = position.x;
+            pos.data[i + 1] = position.y;
+            pos.data[i + 2] = position.z;
+            pos.data[i + 3] = vel.x;
+            pos.data[i + 4] = vel.y;
+            pos.data[i + 5] = vel.z;
 
             ball++;
         }
@@ -114,6 +159,34 @@ public class Networking : MonoBehaviour
 
         socket.emit("sendPos", JsonUtility.ToJson(pos));
         //    print("sent position: " + JsonUtility.ToJson(pos));
+    }
+
+    public void UpdateTrajectory()
+    {
+        var traj = new Trajectory();
+
+        traj.position = GM.Trajectory.transform.position;
+        traj.scale = GM.Trajectory.transform.localScale;
+        traj.texture = GM.Trajectory.GetComponent<MeshRenderer>().material.mainTextureScale;
+        traj.rotation = GM.Trajectory.transform.rotation;
+
+        socket.emit("updateTrajectory", JsonUtility.ToJson(traj));
+    }
+
+
+    [System.Serializable]
+    public class Position
+    {
+        public float[] data;
+    }
+
+    [System.Serializable]
+    public class Trajectory
+    {
+       public Vector3 position;
+        public Vector3 scale;
+        public Vector2 texture;
+        public Quaternion rotation;
     }
 
 }

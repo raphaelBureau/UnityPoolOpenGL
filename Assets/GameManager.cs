@@ -14,6 +14,15 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject mainBall;
     [SerializeField] GameObject trajectory;
     [SerializeField] Networking net;
+    [SerializeField] TextMeshProUGUI Message;
+
+    public GameObject Trajectory
+    {
+        get
+        {
+            return trajectory;
+        }
+    }
 
     public Networking Net
     {
@@ -44,17 +53,18 @@ public class GameManager : MonoBehaviour
 
     bool playing;
 
+    public bool Playing { get { return playing; } }
+
     bool multiplayer = false;
+
+    string player1Name = "Joueur 1";
+    string player2Name = "Joueur 2";
     public void EnableMultiplayer(bool first)
     {
         multiplayer = true;
         sendPackets = first;
         CM.Active = !first;
         UpdateProfiles();
-        if(!first)
-        {
-            trajectory.GetComponent<MeshRenderer>().enabled = false; //on veut pas voir le trajectory (peut etre que plus tard on pourra send le trajectory au autres joueurs)
-        }
     }
 
     public void OtherPlayerPlayRequest() //resume la partie, assume que chaque balle a cessé de bouger
@@ -153,7 +163,7 @@ public class GameManager : MonoBehaviour
             Ray ray = CM.TopCam.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit, 50f, LayerMask.GetMask("Surface")))
             {
-                mainBall.GetComponent<Rigidbody>().MovePosition(new Vector3(hit.point.x, 1.3f, hit.point.z)); //pour eviter que une mauvais placement ne soit pas detecté
+                mainBall.transform.position = new Vector3(hit.point.x, 1.3f, hit.point.z);
                 mainBall.GetComponent<Renderer>().material.color = new Color(1f, 0.5f, 0.5f);
               //  print(mainBall.GetComponent<mainBall>().GoodPlacement);
                 if (mainBall.GetComponent<mainBall>().GoodPlacement)
@@ -212,7 +222,8 @@ public class GameManager : MonoBehaviour
                     if (mouseClick.left && !CM.InUI)
                     {//firrre!!!
                         mainBall.GetComponent<Rigidbody>().velocity = new Vector3(CM.Cam.transform.forward.x, 0, CM.Cam.transform.forward.z).normalized * hitStrenght;
-                        trajectory.GetComponent<MeshRenderer>().enabled = false;
+                        trajectory.SetActive(false);
+
                         playAgain = false;
                         playing = false;
                         CM.Active = true;
@@ -229,7 +240,7 @@ public class GameManager : MonoBehaviour
                     if (Mathf.Abs((CM.Cam.transform.position - mainBall.transform.position + Vector3.up * 2).magnitude) <= 7.1 && (Mathf.Abs(CM.Cam.transform.rotation.w - targetRotation.w + CM.Cam.transform.rotation.x - targetRotation.x) < 5))
                     {
                         playing = true;
-                        trajectory.GetComponent<MeshRenderer>().enabled = true;
+                        trajectory.SetActive(true);
                         trajectory.transform.position = new Vector3(mainBall.transform.position.x, 0.6f, mainBall.transform.position.z) + new Vector3(CM.Cam.transform.forward.x, 0, CM.Cam.transform.forward.z).normalized * hitStrenght / 2;
                         trajectory.transform.localScale = new Vector3(0.02f, 1, hitStrenght / 10f);
                         trajectory.transform.LookAt(new Vector3(mainBall.transform.position.x, 0.6f, mainBall.transform.position.z) + new Vector3(CM.Cam.transform.forward.x, 0, CM.Cam.transform.forward.z).normalized * hitStrenght);
@@ -298,7 +309,32 @@ public class GameManager : MonoBehaviour
     {
             if(ballNo == 8)
             {//game over
-                return;
+                if (playerTurn)
+                {
+                    if (player2Points == 7)
+                    {
+                    //win
+                    Message.text = player2Name + " a gagné la partie";
+                    }
+                    else
+                    {
+                    //loose
+                    Message.text = player1Name + " a gagné la partie, " + player2Name + " a fait tombé la boulle 8 avant les boulles 9-15";
+                }
+                }
+                else
+                {
+                    if (player1Points == 7)
+                    {
+                    //win
+                    Message.text = player1Name + " a gagné la partie";
+                }
+                    else
+                    {
+                    //loose
+                    Message.text = player2Name + " a gagné la partie, " + player1Name + " a fait tombé la boulle 8 avant les boulles 1-7";
+                }
+                }
             }
             else
             {
@@ -380,6 +416,8 @@ public class GameManager : MonoBehaviour
         }
         TextMeshProUGUI[] text1 = player1Display.GetComponentsInChildren<TextMeshProUGUI>(); //lenght 3, 0= nom, 1= score, 2 = balltype
 
+        text1[0].text = player1Name;
+
         text1[1].text = "Score: " + player1Points;
 
         if (firstBallFell)
@@ -397,6 +435,8 @@ public class GameManager : MonoBehaviour
             player2Display.GetComponent<Image>().color = new Color(0.6f, 0.6f, 0.6f, 0.5f);
         }
         TextMeshProUGUI[] text2 = player2Display.GetComponentsInChildren<TextMeshProUGUI>(); //lenght 3, 0= nom, 1= score, 2 = balltype
+
+        text2[0].text = player2Name;
 
         text2[1].text = "Score: " + player2Points;
 
