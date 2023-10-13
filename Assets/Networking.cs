@@ -19,7 +19,7 @@ public class Networking : MonoBehaviour
         Time.timeScale = 0;//stop and wait for player 2
         frameCounter = 0;
         Message.text = "Connection au Serveur...";
-        socket = SocketIo.establishSocketConnection("ws://127.0.0.1:3000");
+        socket = SocketIo.establishSocketConnection("wss://bureau.blue:3000");
         socket.connect();
  
         Message.text = "En attente d'un autre joueur";

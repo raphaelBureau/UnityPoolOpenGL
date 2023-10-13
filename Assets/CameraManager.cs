@@ -70,7 +70,7 @@ public class CameraManager : MonoBehaviour
         {
             if(ball.activeSelf) { 
             float vel = ball.GetComponent<Rigidbody>().velocity.magnitude;
-            if(vel > 0.05)
+            if(vel > 0)
             {
                 fastBalls.Add((vel, ball.transform.position));
                 totalVel += vel;
@@ -116,15 +116,18 @@ public class CameraManager : MonoBehaviour
                 if(positions[0].priority - positions[1].priority < skyPriorityMargin)
                 {
                     inSky = true;
+                    Vector3 actionAvg = (positions[0].pos + positions[1].pos) / 2;
+
+                    currentSky = (Mathf.Abs(actionAvg.x - skyView.position.x) + Mathf.Abs(actionAvg.z - skyView.position.z) < Mathf.Abs(actionAvg.x - secondView.position.x) + Mathf.Abs(actionAvg.z - secondView.position.z));
                 }
             }
 
-            int val = 0;
-            foreach(var el in positions)
-            {
-                print("pos "+val+", priority: " + el.priority + ", pos: " + el.pos); //debug
-                val++;
-            }
+      //      int val = 0;
+      //      foreach(var el in positions)
+      //      {
+       //         print("pos "+val+", priority: " + el.priority + ", pos: " + el.pos); //debug
+       //         val++;
+       //     }
 
             if(inSky)
             {

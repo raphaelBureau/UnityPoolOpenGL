@@ -182,6 +182,7 @@ public class GameManager : MonoBehaviour
                         net.SendBallData(new BallData(0, true, true));
                         mainBall.GetComponent<mainBall>().placing = false;
                         mainBallFell = false;
+                        mainBallNoReplay = false;
 
                     }
                 }
@@ -284,6 +285,7 @@ public class GameManager : MonoBehaviour
                     net.GiveOtherPlayerControl();
                     sendPackets = false;
                     UpdateProfiles();
+                    mainBallNoReplay = false;
                 }
             }
         }
@@ -309,6 +311,7 @@ public class GameManager : MonoBehaviour
     {
             if(ballNo == 8)
             {//game over
+            Time.timeScale = 0;
                 if (playerTurn)
                 {
                     if (player2Points == 7)
@@ -319,7 +322,7 @@ public class GameManager : MonoBehaviour
                     else
                     {
                     //loose
-                    Message.text = player1Name + " a gagné la partie, " + player2Name + " a fait tombé la boulle 8 avant les boulles 9-15";
+                    Message.text = player1Name + " a gagné la partie, " + player2Name + " a fait tomber la boule 8 avant les boules 9-15";
                 }
                 }
                 else
@@ -332,7 +335,7 @@ public class GameManager : MonoBehaviour
                     else
                     {
                     //loose
-                    Message.text = player2Name + " a gagné la partie, " + player1Name + " a fait tombé la boulle 8 avant les boulles 1-7";
+                    Message.text = player2Name + " a gagné la partie, " + player1Name + " a fait tomber la boule 8 avant les boules 1-7";
                 }
                 }
             }
