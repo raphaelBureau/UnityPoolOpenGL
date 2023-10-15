@@ -268,7 +268,7 @@ public class GameManager : MonoBehaviour
             bool Moved = false;
             foreach(var ball in ballList)
             {
-                if(ball.GetComponent<Rigidbody>().velocity.magnitude > 0.05 && ball.activeSelf) //minimum acceptable movement
+                if(ball.GetComponent<Rigidbody>().velocity.magnitude > 0 && ball.activeSelf) //minimum acceptable movement
                 {
                     Moved = true;
                 }

@@ -160,7 +160,7 @@ public class CameraManager : MonoBehaviour
             var targetRotation = Quaternion.LookRotation(GetBestLookPos() - cam.transform.position);
             //var targetRotation = Quaternion.LookRotation(bestBall.transform.position - cam.transform.position);
 
-            cam.transform.rotation = Quaternion.Slerp(cam.transform.rotation, targetRotation, 5 * Time.deltaTime);
+            cam.transform.rotation = Quaternion.Slerp(cam.transform.rotation, targetRotation,  Time.deltaTime);
 
             //cam.transform.LookAt(positions[0].movement.look.transform.position);
         }
