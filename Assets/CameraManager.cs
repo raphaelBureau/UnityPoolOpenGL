@@ -11,13 +11,16 @@ public class CameraManager : MonoBehaviour
     [SerializeField] Camera topCam;
     [SerializeField] float CamSpeed = 10f;
     [SerializeField] Transform skyView;
-    [SerializeField] float skyPriorityMargin = 20f;
-    [SerializeField] float LazySkyMargin = 5f;
+    [SerializeField] Transform secondView;
+    [SerializeField] float skyPriorityMargin = 0.5f;
+    [SerializeField] float LazySkyMargin = 0.2f;
     [SerializeField] GameObject mainBall;
+
+    bool currentSky = false;
+
 
     //ui
     [SerializeField] Image CamControlBackground;
-    
 
     bool inSky = false;
     public bool InUI = false;
@@ -38,13 +41,14 @@ public class CameraManager : MonoBehaviour
     public bool Active; //daddy gameManager controle ca
     void Start()
     {
+        currentSky = false;
         cam.enabled = true;
         topCam.enabled = false;
         fixedCam = false;
         InUI = false;
         CamControlBackground.color = new Color(0.6f, 0.6f, 0.6f, 0.5f);
 
-        Active = false;
+        Active = true;
         cams = transform.GetComponentsInChildren<SceneCamera>();
         inSky = false;
 
@@ -112,19 +116,29 @@ public class CameraManager : MonoBehaviour
                 if(positions[0].priority - positions[1].priority < skyPriorityMargin)
                 {
                     inSky = true;
+                    Vector3 actionAvg = (positions[0].pos + positions[1].pos) / 2;
+
+                    currentSky = (Mathf.Abs(actionAvg.x - skyView.position.x) + Mathf.Abs(actionAvg.z - skyView.position.z) < Mathf.Abs(actionAvg.x - secondView.position.x) + Mathf.Abs(actionAvg.z - secondView.position.z));
                 }
             }
 
-    //        int val = 0;
-    //        foreach(var el in positions)
-     //       {
-      //          print("pos "+val+", priority: " + el.priority + ", pos: " + el.pos); //debug
-      //          val++;
-      //      }
+      //      int val = 0;
+      //      foreach(var el in positions)
+      //      {
+       //         print("pos "+val+", priority: " + el.priority + ", pos: " + el.pos); //debug
+       //         val++;
+       //     }
 
             if(inSky)
             {
-                cam.transform.position = Vector3.MoveTowards(cam.transform.position, skyView.position, Time.deltaTime * CamSpeed);
+                if (currentSky)
+                {
+                    cam.transform.position = Vector3.MoveTowards(cam.transform.position, skyView.position, Time.deltaTime * CamSpeed);
+                }
+                else
+                {
+                    cam.transform.position = Vector3.MoveTowards(cam.transform.position, secondView.position, Time.deltaTime * CamSpeed);
+                }
             }
             else
             {
@@ -146,7 +160,7 @@ public class CameraManager : MonoBehaviour
             var targetRotation = Quaternion.LookRotation(GetBestLookPos() - cam.transform.position);
             //var targetRotation = Quaternion.LookRotation(bestBall.transform.position - cam.transform.position);
 
-            cam.transform.rotation = Quaternion.Slerp(cam.transform.rotation, targetRotation, 5 * Time.deltaTime);
+            cam.transform.rotation = Quaternion.Slerp(cam.transform.rotation, targetRotation,  Time.deltaTime);
 
             //cam.transform.LookAt(positions[0].movement.look.transform.position);
         }

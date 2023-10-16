@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static ballScript;
 
 public class mainBall : MonoBehaviour
 {
@@ -11,9 +12,11 @@ public class mainBall : MonoBehaviour
     }
     int count = 0;
     bool triggerEmpty = true;
+    public bool placing = false;
     // Start is called before the first frame update
     void Start()
     {
+        placing = false;
         count = 0;
         triggerEmpty = true;
     }
@@ -25,15 +28,18 @@ public class mainBall : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        print("trigger empty: " + triggerEmpty);
-        triggerEmpty = true;
-        if(transform.position.y <-2)
-        {
-            GM.RequestMainBallPlacement();
-            gameObject.SetActive(false);
-            transform.position = new Vector3(0, 2, 0);
-            gameObject.GetComponent<Collider>().enabled = false;
-            gameObject.GetComponent<Rigidbody>().isKinematic = true;
+      //  print("trigger empty: " + triggerEmpty);
+        triggerEmpty = true; //pour placer la balle
+
+            if (GM.sendPackets && transform.position.y < -2 && !placing)
+            {
+                
+                gameObject.SetActive(false);
+                transform.position = new Vector3(0, 2, 0);
+                gameObject.GetComponent<Collider>().enabled = false;
+                gameObject.GetComponent<Rigidbody>().isKinematic = true;
+                GM.mainBallNoReplay = true;
+                GM.Net.SendBallData(new BallData(0, false, false)); //dire a lautre joueur de placer la balle main (id=0)
         }
        
     }
@@ -44,6 +50,7 @@ public class mainBall : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         count++;
+        triggerEmpty = false; //peut etre un fix ?? (non)
        
     }
     private void OnTriggerExit(Collider other)

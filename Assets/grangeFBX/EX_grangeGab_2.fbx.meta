@@ -1,0 +1,394 @@
+fileFormatVersion: 2
+guid: fff83f8c402e16b4f9413752c37554c4
+ModelImporter:
+  serializedVersion: 22200
+  internalIDToNameTable: []
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Default_Material
+    second: {fileID: 2100000, guid: a7a25303c7857fd48a61bff640fa9ba6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_affiche_1
+    second: {fileID: 2100000, guid: b579d176940f44046a5b69b23b344971, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_affiche_2
+    second: {fileID: 2100000, guid: 9683f038fcf699645a7a8cd7a9bc4e08, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_biere_1
+    second: {fileID: 2100000, guid: bb58c9726b84fb94bac6c553bcd06d70, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_blanc_1
+    second: {fileID: 2100000, guid: 185db8e156de82746af7d269d450e170, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_boisEtagere_1
+    second: {fileID: 2100000, guid: c3d974fdb0c538142bf441cbbd516534, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_bois_1
+    second: {fileID: 2100000, guid: 7f575c936ba6040499ab782303f49ed8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_bois_2
+    second: {fileID: 2100000, guid: 7c09f2115803ce14f89d7c565f224280, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_bouteilleJager_1
+    second: {fileID: 2100000, guid: c5d2ec6a1af0ac746811965118026570, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_bouteille_1
+    second: {fileID: 2100000, guid: 8816c66f9255c4c438ebc0fab8aa62fc, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_buche_1
+    second: {fileID: 2100000, guid: 71e45634a5a70af4bb138d7b8c2ec55b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_canette_1
+    second: {fileID: 2100000, guid: 047155b9ad4baaf489ef56524d428646, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_capCoke_1
+    second: {fileID: 2100000, guid: 53e0809a4c6584249801626bf988f91f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_capRum_1
+    second: {fileID: 2100000, guid: 627659b1e4cd25744b912d8fb8618271, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_capSprite_1
+    second: {fileID: 2100000, guid: 188b496632ee8ce49b98e2351099f086, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_casier_1
+    second: {fileID: 2100000, guid: 0f72a0ad822b0ec47a591a026dc4ee22, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_castor_1
+    second: {fileID: 2100000, guid: 6bafdff858185b341a9877cbf2e6eda1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_chains_1
+    second: {fileID: 2100000, guid: df4511c1b6f0a6641bf49c586650e5af, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_coke_1
+    second: {fileID: 2100000, guid: 0ff580bf43ad940438675b2eec4b50c7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_collantCoke_1
+    second: {fileID: 2100000, guid: c3880698b1d045f44b5f22f34bc06d9f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_collantJager_1
+    second: {fileID: 2100000, guid: ea26c124492e2754ca6ecf31d7e8842c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_collantJager_2
+    second: {fileID: 2100000, guid: ec0063e319ba04d48b9ee44c532993bb, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_collantRum_1
+    second: {fileID: 2100000, guid: db46e63c511192049a9efedef9e13c1d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_collantRum_2
+    second: {fileID: 2100000, guid: 7f38f07564cd14d44a20d1e96f8265e3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_collantRum_3
+    second: {fileID: 2100000, guid: 8ccc1820fae7d0e44a1d47f46985ed0f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_collantSprite_1
+    second: {fileID: 2100000, guid: 2ce9b2b1a9a4b1248a6a7ed293853082, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_coronaEtiquette_1
+    second: {fileID: 2100000, guid: ea4c50a20524ec142a9eb7e1694dd7a0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_coton_1
+    second: {fileID: 2100000, guid: 01e95328c109f2a4199194183c1d35ea, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_ecranTv_1
+    second: {fileID: 2100000, guid: cfc4bbf8dd118584cb646a4aa6aabff2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_fenetre_1
+    second: {fileID: 2100000, guid: 02c52aab6cf7c0b4a8f9611ad5a868fc, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_fondCoke_1
+    second: {fileID: 2100000, guid: 2cf2524340e8a0e4ba2120b3ce2f7345, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_fondMur_1
+    second: {fileID: 2100000, guid: c65d3bd3906971544ac9daaadf2e39ba, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_fondRum_1
+    second: {fileID: 2100000, guid: 35238650705f5514590233665bc0bdcd, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_fondSprite_1
+    second: {fileID: 2100000, guid: 9f7573a4760f5ca4abac01e01879ed4b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_laine_1
+    second: {fileID: 2100000, guid: 813c5f99c1ebd984691cdd137a0b2fd3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_lampeNeon_1
+    second: {fileID: 2100000, guid: 9a30c073678456a458d6b5c57f569f2b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_lavabo_1
+    second: {fileID: 2100000, guid: fa04ee76799b34f4bb7840b6b9bf1a94, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_liquideSus_1
+    second: {fileID: 2100000, guid: edbe214b534dad94b92e5d6259dc344b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_lumiere_1
+    second: {fileID: 2100000, guid: 44958383ae469ab47b04aaa4cc2de7bc, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_mdf_1
+    second: {fileID: 2100000, guid: e6d38678228190e4888e38745ab448a2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_mirroir_1
+    second: {fileID: 2100000, guid: 356addc8d57eaab4699489a9d411b551, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_mtnDew_1
+    second: {fileID: 2100000, guid: a206a73942c4d924983ccbf50ed57ce0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_neon_1
+    second: {fileID: 2100000, guid: 70144c6cea50e024b97c9791250e0372, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_noir_1
+    second: {fileID: 2100000, guid: 8ca211f2030f6f44ca9c42d7ad7f8426, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_pattesTable_1
+    second: {fileID: 2100000, guid: ca1c8a1c4674ae845bd1f3f764705ad1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_pepsi_1
+    second: {fileID: 2100000, guid: 414be5525507eec4d97913cad8b2f742, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_plancheBois_1
+    second: {fileID: 2100000, guid: 076ef7bb904f58645bda0955dca2a0e0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_plywood_1
+    second: {fileID: 2100000, guid: 5adc20cc8b92a564fbf15b9c207a6c13, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_porte_1
+    second: {fileID: 2100000, guid: 8f9e422b72aaf104aba8722b3922d236, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_queueBillard_1
+    second: {fileID: 2100000, guid: 2e1c593db5ea713469831bef1b525a09, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_robinet_1
+    second: {fileID: 2100000, guid: 7af9a09e607cf1249bfe281203aa8f36, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_sprite_1
+    second: {fileID: 2100000, guid: fcd8ed503253346469a4b17e05cb6d0a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_supportBuche_1
+    second: {fileID: 2100000, guid: 5644b5878cd8ee544a3ccf00ae42510a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_tapis_1
+    second: {fileID: 2100000, guid: 8bddc698a47a19c48a07c848900dbd26, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_tile_1
+    second: {fileID: 2100000, guid: 98e76483f71b2b0408e37ac543449148, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MT_T_verreShooter_1
+    second: {fileID: 2100000, guid: a3e7be20e9ff47c4fa91d694336f2250, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: standardSurface1
+    second: {fileID: 2100000, guid: f69596f156094bb45bcf7844a3654057, type: 2}
+  materials:
+    materialImportMode: 2
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importPhysicalCameras: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    nodeNameCollisionStrategy: 1
+    fileIdsGeneration: 2
+    swapUVChannels: 0
+    generateSecondaryUV: 1
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    bakeAxisConversion: 0
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    meshOptimizationFlags: -1
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 1
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    strictVertexDataChecks: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
+  importAnimation: 1
+  humanDescription:
+    serializedVersion: 3
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 1
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 2
+  humanoidOversampling: 1
+  avatarSetup: 0
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  importBlendShapeDeformPercent: 1
+  remapMaterialsIfMaterialImportModeIsNone: 0
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
