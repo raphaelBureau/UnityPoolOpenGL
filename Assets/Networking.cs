@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using UnityEngine;
 using KyleDulce.SocketIo;
 using TMPro;
@@ -12,10 +13,15 @@ public class Networking : MonoBehaviour
     [SerializeField] GameManager GM;
     [SerializeField] TextMeshProUGUI Message;
 
+    [DllImport("__Internal")] private static extern void sendMessage(string mess);
+
+    [DllImport("__Internal")] private static extern void setName(string name);
+
     int frameCounter = 0;
 
     void Start()
     {
+        WebGLInput.captureAllKeyboardInput = false;
         Time.timeScale = 0;//stop and wait for player 2
         frameCounter = 0;
         Message.text = "Connection au Serveur...";
@@ -41,6 +47,7 @@ public class Networking : MonoBehaviour
             Message.text = "";
             print("connected");
             GM.EnableMultiplayer(bool.Parse(first));
+            setName(bool.Parse(first) ? "Joueur 1" : "Joueur 2");
             Time.timeScale = 1; //play game;
         });
 
@@ -96,6 +103,11 @@ public class Networking : MonoBehaviour
             GM.Trajectory.GetComponent<MeshRenderer>().material.mainTextureScale = traj.texture;
             GM.Trajectory.transform.rotation = traj.rotation;
         });
+
+        socket.on("sendMessage", (message) =>
+        {
+            sendMessage(message);
+        });
     }
 
     // Update is called once per frame
@@ -132,6 +144,11 @@ public class Networking : MonoBehaviour
     {
         socket.emit("updateBalls", JsonUtility.ToJson(data));
      //   print("sent data: " + JsonUtility.ToJson(data));
+    }
+
+    public void EmitMessage(string message)
+    {
+        socket.emit("sendMessage", message);
     }
     public void UpdateAllBalls()
     {
