@@ -150,6 +150,14 @@ public class Networking : MonoBehaviour
     {
         socket.emit("sendMessage", message);
     }
+    public void JoinChannel(string channel)
+    {
+        socket.emit("joinChannel", channel);
+    }
+    public void LeaveChannel(string channel)
+    {
+        socket.emit("leaveChannel", channel);
+    }
     public void UpdateAllBalls()
     {
         List<GameObject> balls = GM.BallList;

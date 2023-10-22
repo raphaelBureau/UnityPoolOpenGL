@@ -19,9 +19,9 @@
         </div>
         <div class="chatBox">
           <div class="chatChannels">
-            <div class="channelLabel">Tous</div>
-            <div class="channelLabel">Global</div>
-            <div class="channelLabel">Jeu</div>
+            <div class="channelLabel" onclick="JoinChannel()">+</div>
+            <div class="channelLabel channelSelected" onclick="ChangeChannel(0)" id="0">Tous</div>
+            <div class="channelLabel" onclick="ChangeChannel(1)" id="1">Jeu</div>
           </div>
           <div class="chat">
             <div class="chatMessages">
