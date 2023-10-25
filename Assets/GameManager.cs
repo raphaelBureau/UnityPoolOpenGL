@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using static ballScript;
+using System.Runtime.InteropServices;
 
 public class GameManager : MonoBehaviour
 {
@@ -15,6 +16,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject trajectory;
     [SerializeField] Networking net;
     [SerializeField] TextMeshProUGUI Message;
+
+    [DllImport("__Internal")] private static extern bool IsMobile();
 
     public GameObject Trajectory
     {
@@ -47,8 +50,8 @@ public class GameManager : MonoBehaviour
     (bool left, bool right) mouseClick;
     (bool left, bool right) prevMouseClick;
     float hitStrenght = 30f;
-    Vector3 mouseMove;
-    Vector3 prevMouseMove;
+    Vector3 mouseMove = new Vector3(0, 0, 0);
+    Vector3 prevMouseMove = new Vector3(0,0,0);
     Resolution screen;
 
     bool playing;
@@ -66,13 +69,17 @@ public class GameManager : MonoBehaviour
     bool playerTurn = false; //false = player 1, true = player 2;
     bool playAgain = false; //si un point = true
 
-    public bool mainBallNoReplay = false; 
+    public bool mainBallNoReplay = false;
+
+    bool playerBallClick = false;
 
     bool firstBallFell = false;
     bool player1Solid;
 
     int player1Points = 0;
     int player2Points = 0;
+
+    float playerSens = 1;
 
     void Start()
     {
@@ -93,10 +100,10 @@ public class GameManager : MonoBehaviour
         playing = false; //doit etre false pour placer la camera au bon endroit
         int nbBoules = BallGameObj.transform.childCount;
         ballList = new List<GameObject>();
-        for(int i = 0; i<nbBoules;i++)
+        for (int i = 0; i < nbBoules; i++)
         {
             ballList.Add(BallGameObj.transform.GetChild(i).gameObject);
-          //  print("balllist id: " + i + " name: " + ballList[i].name);
+            //  print("balllist id: " + i + " name: " + ballList[i].name);
         }
 
         UpdateProfiles();
@@ -133,17 +140,17 @@ public class GameManager : MonoBehaviour
     }
     private void FixedUpdate() //check la velocite donc fixedupdate
     {
-        if(CM.Active && sendPackets)
+        if (CM.Active && sendPackets)
         {
             bool Moved = false;
-            foreach(var ball in ballList)
+            foreach (var ball in ballList)
             {
-                if(ball.GetComponent<Rigidbody>().velocity.magnitude > 0 && ball.activeSelf) //minimum acceptable movement
+                if (ball.GetComponent<Rigidbody>().velocity.magnitude > 0 && ball.activeSelf) //minimum acceptable movement
                 {
                     Moved = true;
                 }
             }
-            if(!Moved)
+            if (!Moved)
             {
                 if (playAgain && !mainBallNoReplay)
                 {
@@ -163,43 +170,86 @@ public class GameManager : MonoBehaviour
     bool HandleInput()
     {
         bool changed = false;
+        Transform camTran = CM.Cam.transform;
+        Vector3 ballPos = mainBall.transform.position;
 
-        mouseClick.left = Input.GetMouseButton(0);
-        mouseClick.right = Input.GetMouseButton(1);
-
-        mouseMove = Input.mousePosition;
-        if (mouseClick.right)
-        {//user controls
-         //y rotation
-            float yR = (mouseMove.x - prevMouseMove.x) / screen.width * 100;
-            CM.Cam.transform.RotateAround(mainBall.transform.position, CM.Cam.transform.up, yR);
-
-            //x rotation
-            float xR = (mouseMove.y - prevMouseMove.y) / screen.height * 100;
-            CM.Cam.transform.RotateAround(mainBall.transform.position, CM.Cam.transform.right, -xR);
-
-
-            CM.Cam.transform.LookAt(mainBall.transform.position);
-
-            if (mouseMove.x != prevMouseMove.x || mouseMove.y != prevMouseMove.y)
+        if (IsMobile())
+        {//mobile
+            switch(Input.touchCount)
             {
-                changed = true;
+                case 0:
+                    prevMouseMove = Vector3.zero;
+                    break;
+                case 1: //camera move
+                    mouseMove = Input.GetTouch(0).position * playerSens;
+                    if(prevMouseMove == Vector3.zero)
+                    {
+                        prevMouseMove = mouseMove;
+                    }
+                    if ((mouseMove - prevMouseMove).magnitude > 0)
+                    {//user controls
+                     //y rotation
+                        float yR = (mouseMove.x - prevMouseMove.x) / screen.width * 100;
+                        camTran.RotateAround(ballPos, camTran.up, yR);
+
+                        //x rotation
+                        float xR = (mouseMove.y - prevMouseMove.y) / screen.height * 100;
+                        camTran.RotateAround(ballPos, camTran.right, -xR);
+
+
+                        camTran.LookAt(ballPos);
+                        changed = true;
+                        prevMouseMove = mouseMove;
+                    }
+                    break;
+                case 2: //fire
+                    playerBallClick = true;
+                    changed = true;
+                    break;
+
             }
         }
+        else
+        { //desktop
+            mouseClick.left = Input.GetMouseButton(0);
+            mouseClick.right = Input.GetMouseButton(1);
 
-        if (Mathf.Abs(Input.mouseScrollDelta.y) > 0)
-        {
-            hitStrenght += Input.mouseScrollDelta.y;
-            changed = true;
+            mouseMove = Input.mousePosition;
+            if (prevMouseMove == Vector3.zero)
+            {
+                prevMouseMove = mouseMove;
+            }
+            if (mouseClick.right && (mouseMove - prevMouseMove).magnitude>0)
+            {//user controls
+             //y rotation
+                float yR = (mouseMove.x - prevMouseMove.x) / screen.width * 100;
+                camTran.RotateAround(ballPos, camTran.up, yR);
+
+                //x rotation
+                float xR = (mouseMove.y - prevMouseMove.y) / screen.height * 100;
+                camTran.RotateAround(ballPos, camTran.right, -xR);
+
+
+                camTran.LookAt(ballPos);
+                prevMouseMove = mouseMove;
+                changed = true;
+            }
+
+            if (Mathf.Abs(Input.mouseScrollDelta.y) > 0)
+            {
+                hitStrenght += Input.mouseScrollDelta.y;
+                changed = true;
+            }
+            if (prevMouseClick.left != mouseClick.left || prevMouseClick.right != mouseClick.right)
+            {
+                changed = true;
+                prevMouseClick = mouseClick;
+                if(mouseClick.left)
+                {
+                    playerBallClick = true;
+                }
+            }
         }
-        if(prevMouseClick.left != mouseClick.left || prevMouseClick.right != mouseClick.right)
-        {
-            changed = true;
-        }
-
-        prevMouseClick = mouseClick;
-        prevMouseMove = mouseMove;
-
         return changed;
     }
     void UpdatePlayControls()
@@ -211,7 +261,7 @@ public class GameManager : MonoBehaviour
         trajectory.transform.LookAt(new Vector3(ball.x, 0.6f, ball.z) + new Vector3(camf.x, 0, camf.z).normalized * hitStrenght);
         trajectory.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(1, hitStrenght / 2);
 
-        if (mouseClick.left && !CM.InUI)
+        if (playerBallClick && !CM.InUI)
         {//firrre!!!
             mainBall.GetComponent<Rigidbody>().velocity = new Vector3(CM.Cam.transform.forward.x, 0, CM.Cam.transform.forward.z).normalized * hitStrenght;
             trajectory.SetActive(false);
@@ -219,6 +269,7 @@ public class GameManager : MonoBehaviour
             playAgain = false;
             playing = false;
             CM.Active = true;
+            playerBallClick = false;
             Net.UpdateAllBalls();
         }
     }
@@ -295,102 +346,103 @@ public class GameManager : MonoBehaviour
             net.SendBallData(new BallData(0, true, false));
         }
     }
-    public void BallFell(int ballNo,bool solidColor)
+    public void BallFell(int ballNo, bool solidColor)
     {
-            if(ballNo == 8)
-            {//game over
+        if (ballNo == 8)
+        {//game over
             Time.timeScale = 0;
-                if (playerTurn)
+            if (playerTurn)
+            {
+                if (player2Points == 7)
                 {
-                    if (player2Points == 7)
-                    {
                     //win
                     Message.text = player2Name + " a gagné la partie";
-                    }
-                    else
-                    {
-                    //loose
-                    Message.text = player1Name + " a gagné la partie, " + player2Name + " a fait tomber la boule 8 avant les boules 9-15";
-                }
                 }
                 else
                 {
-                    if (player1Points == 7)
-                    {
-                    //win
-                    Message.text = player1Name + " a gagné la partie";
-                }
-                    else
-                    {
                     //loose
-                    Message.text = player2Name + " a gagné la partie, " + player1Name + " a fait tomber la boule 8 avant les boules 1-7";
-                }
+                    Message.text = player1Name + " a gagné la partie, " + player2Name + " a fait tomber la boule 8 avant les boules 9-15";
                 }
             }
             else
             {
-                if(!firstBallFell)
+                if (player1Points == 7)
                 {
-                    firstBallFell = true;
+                    //win
+                    Message.text = player1Name + " a gagné la partie";
+                }
+                else
+                {
+                    //loose
+                    Message.text = player2Name + " a gagné la partie, " + player1Name + " a fait tomber la boule 8 avant les boules 1-7";
+                }
+            }
+        }
+        else
+        {
+            if (!firstBallFell)
+            {
+                firstBallFell = true;
 
-                    if(!playerTurn)
-                    {//player 1
-                        player1Solid = solidColor;
-                        player1Points++;
-                   
-                    }
-                    else
-                    {//player 2
-                        player1Solid = !solidColor;
-                        player2Points++;
-                    }
+                if (!playerTurn)
+                {//player 1
+                    player1Solid = solidColor;
+                    player1Points++;
+
+                }
+                else
+                {//player 2
+                    player1Solid = !solidColor;
+                    player2Points++;
+                }
                 playAgain = true;
                 UpdateProfiles();
-                    return;
-                }
+                return;
+            }
 
-                if(solidColor)
+            if (solidColor)
+            {
+                if (player1Solid)
                 {
-                    if(player1Solid) {
-                        player1Points++;
+                    player1Points++;
 
-                        if(!playerTurn)
-                        {
-                            playAgain = true;
-                        }
-                    }
-                    else
+                    if (!playerTurn)
                     {
-                        player2Points++;
-
-                        if (playerTurn)
-                        {
-                            playAgain = true;
-                        }
+                        playAgain = true;
                     }
                 }
-                else //pas solid
+                else
                 {
-                    if (!player1Solid)
-                    {
-                        player1Points++;
+                    player2Points++;
 
-                        if (!playerTurn)
-                        {
-                            playAgain = true;
-                        }
-                    }
-                    else
+                    if (playerTurn)
                     {
-                        player2Points++;
-
-                        if (playerTurn)
-                        {
-                            playAgain = true;
-                        }
+                        playAgain = true;
                     }
                 }
             }
+            else //pas solid
+            {
+                if (!player1Solid)
+                {
+                    player1Points++;
+
+                    if (!playerTurn)
+                    {
+                        playAgain = true;
+                    }
+                }
+                else
+                {
+                    player2Points++;
+
+                    if (playerTurn)
+                    {
+                        playAgain = true;
+                    }
+                }
+            }
+        }
         UpdateProfiles();
     }
     public void UpdateBalls(BallData ball)

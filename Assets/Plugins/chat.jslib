@@ -6,4 +6,7 @@ mergeInto(LibraryManager.library, {
     setName: function (name) {
       SetName(UTF8ToString(name));
   },
+   IsMobile: function () {
+    return (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent));
+  },
 });
