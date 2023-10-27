@@ -123,9 +123,8 @@ public class GameManager : MonoBehaviour
             {
                 if (playing)
                 { //donne le controlle de la camera au user et permet de frapper la boulle
-                    bool changed = HandleInput();
 
-                    if (changed)
+                    if (HandleInput()) //retoune true si un input a change
                     {
                         UpdatePlayControls();
                     }
@@ -233,6 +232,10 @@ public class GameManager : MonoBehaviour
                 camTran.LookAt(ballPos);
                 prevMouseMove = mouseMove;
                 changed = true;
+            }
+            else
+            {
+                prevMouseMove = mouseMove;
             }
 
             if (Mathf.Abs(Input.mouseScrollDelta.y) > 0)
