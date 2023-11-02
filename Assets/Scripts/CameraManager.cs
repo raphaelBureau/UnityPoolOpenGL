@@ -15,15 +15,11 @@ public class CameraManager : MonoBehaviour
     [SerializeField] float skyPriorityMargin = 0.5f;
     [SerializeField] float LazySkyMargin = 0.2f;
     [SerializeField] GameObject mainBall;
+    [SerializeField] Image CamControlBackground; //pour lock le ui quand il faut placer la boulle
 
     bool currentSky = false;
 
-
-    //ui
-    [SerializeField] Image CamControlBackground;
-
     bool inSky = false;
-    public bool InUI = false;
     bool fixedCam = false; //false = dynamic, true = fixed
     //temp
     [SerializeField] GameObject BallGameObj;
@@ -45,8 +41,6 @@ public class CameraManager : MonoBehaviour
         cam.enabled = true;
         topCam.enabled = false;
         fixedCam = false;
-        InUI = false;
-        CamControlBackground.color = new Color(0.6f, 0.6f, 0.6f, 0.5f);
 
         Active = true;
         cams = transform.GetComponentsInChildren<SceneCamera>();
@@ -168,8 +162,8 @@ public class CameraManager : MonoBehaviour
 
     public void ToggleCam()
     {
-        Color red = new Color(1, 0.1f, 0.1f, 0.5f);
-        Color grey = new Color(0.6f, 0.6f, 0.6f, 0.5f);
+        Color red = new Color(1, 0.1f, 0.1f, cam.enabled? 1f : 0.5f);
+        Color grey = new Color(0.6f, 0.6f, 0.6f, cam.enabled ? 1f : 0.5f);
         cam.enabled = topCam.enabled;
         topCam.enabled = !cam.enabled;
         if (!cam.enabled)
@@ -182,21 +176,6 @@ public class CameraManager : MonoBehaviour
             CamControlBackground.color = grey;
             fixedCam = false;
         }
-    }
-
-    public void ToggleCamEnter()
-    {
-        Color solid = CamControlBackground.color;
-        solid.a = 1f;
-        CamControlBackground.color = solid;
-        InUI = true;
-    }
-    public void ToggleCamExit()
-    { //fulcrum come in
-        Color faded = CamControlBackground.color;
-        faded.a = 0.5f;
-        CamControlBackground.color = faded;
-        InUI = false;
     }
     public void LockTop()
     {

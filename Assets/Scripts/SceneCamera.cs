@@ -12,9 +12,9 @@ public class SceneCamera : MonoBehaviour
 
     List<GameObject> balls;
 
-    [SerializeField] float velocityFactor = 1f; //determine si une balle qui bouge vaut plus que deux balles qui bougent moins
+  //  [SerializeField] float velocityFactor = 1f; //determine si une balle qui bouge vaut plus que deux balles qui bougent moins
     [SerializeField] float yVelocityFactor = 5f; //favorise une balle qui tombe
-    [SerializeField] float viewDistanceFactor = 5f; //favorise une position de camera plus proche de laction
+   // [SerializeField] float viewDistanceFactor = 5f; //favorise une position de camera plus proche de laction
 
     int nbBalles;
 

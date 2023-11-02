@@ -6,6 +6,8 @@ using TMPro;
 using static ballScript;
 using System.Runtime.InteropServices;
 
+[RequireComponent(typeof(UIControls))]
+
 public class GameManager : MonoBehaviour
 {
     // Start is called before the first frame update
@@ -15,7 +17,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject mainBall;
     [SerializeField] GameObject trajectory;
     [SerializeField] Networking net;
-    [SerializeField] TextMeshProUGUI Message;
+
 
     [DllImport("__Internal")] private static extern bool IsMobile();
 
@@ -39,13 +41,6 @@ public class GameManager : MonoBehaviour
 
     public bool sendPackets = false;
 
-    public bool Multiplayer
-    {
-        get { return multiplayer; }
-    }
-
-    [SerializeField] GameObject player1Display;
-    [SerializeField] GameObject player2Display;
 
     (bool left, bool right) mouseClick;
     (bool left, bool right) prevMouseClick;
@@ -54,50 +49,45 @@ public class GameManager : MonoBehaviour
     Vector3 prevMouseMove = new Vector3(0,0,0);
     Resolution screen;
 
-    bool playing;
-
-    public bool Playing { get { return playing; } }
-
-    bool multiplayer = false;
-
-    string player1Name = "Joueur 1";
-    string player2Name = "Joueur 2";
+    public bool Playing { get; private set; }
 
     bool placingMainBall = false;
     bool mainBallFell = false;
 
-    bool playerTurn = false; //false = player 1, true = player 2;
+    public bool PlayerTurn { get; private set;} //false = player 1, true = player 2;
+
     bool playAgain = false; //si un point = true
 
     public bool mainBallNoReplay = false;
 
     bool playerBallClick = false;
 
-    bool firstBallFell = false;
-    bool player1Solid;
+    public bool FirstBallFell { get; private set; }
+    public bool Player1Solid { get; private set; }
 
-    int player1Points = 0;
-    int player2Points = 0;
+    public int Player1Points { get; private set; }
+    public int Player2Points { get; private set; }
 
     float playerSens = 1;
 
+    UIControls UIC;
     void Start()
     {
+        UIC = GetComponent<UIControls>();
         mainBallNoReplay = false;
         sendPackets = false;
-        multiplayer = false;
-        playerTurn = false;
+        PlayerTurn = false;
         playAgain = false;
-        player1Points = 0;
-        player2Points = 0;
-        firstBallFell = false;
+        Player1Points = 0;
+        Player2Points = 0;
+        FirstBallFell = false;
         //initialisation du jeu
         mainBallFell = false;
         placingMainBall = false;
         mouseClick = (false, false);
         mouseMove = Vector3.zero;
         screen = Screen.currentResolution;
-        playing = false; //doit etre false pour placer la camera au bon endroit
+        Playing = false; //doit etre false pour placer la camera au bon endroit
         int nbBoules = BallGameObj.transform.childCount;
         ballList = new List<GameObject>();
         for (int i = 0; i < nbBoules; i++)
@@ -105,8 +95,6 @@ public class GameManager : MonoBehaviour
             ballList.Add(BallGameObj.transform.GetChild(i).gameObject);
             //  print("balllist id: " + i + " name: " + ballList[i].name);
         }
-
-        UpdateProfiles();
     }
 
     // Update is called once per frame
@@ -121,7 +109,7 @@ public class GameManager : MonoBehaviour
             //gerer si le camera manager gere la camera
             if (!CM.Active)
             {
-                if (playing)
+                if (Playing)
                 { //donne le controlle de la camera au user et permet de frapper la boulle
 
                     if (HandleInput()) //retoune true si un input a change
@@ -157,10 +145,10 @@ public class GameManager : MonoBehaviour
                 }
                 else
                 {
-                    playerTurn = !playerTurn;
+                    PlayerTurn = !PlayerTurn;
                     net.GiveOtherPlayerControl();
                     sendPackets = false;
-                    UpdateProfiles();
+                    UIC.UpdateProfiles();
                     mainBallNoReplay = false;
                 }
             }
@@ -180,7 +168,7 @@ public class GameManager : MonoBehaviour
                     prevMouseMove = Vector3.zero;
                     break;
                 case 1: //camera move
-                    mouseMove = Input.GetTouch(0).position * playerSens;
+                    mouseMove = Input.GetTouch(0).position;
                     if(prevMouseMove == Vector3.zero)
                     {
                         prevMouseMove = mouseMove;
@@ -188,11 +176,11 @@ public class GameManager : MonoBehaviour
                     if ((mouseMove - prevMouseMove).magnitude > 0)
                     {//user controls
                      //y rotation
-                        float yR = (mouseMove.x - prevMouseMove.x) / screen.width * 100;
+                        float yR = (mouseMove.x - prevMouseMove.x) / screen.width * 100 * playerSens;
                         camTran.RotateAround(ballPos, camTran.up, yR);
 
                         //x rotation
-                        float xR = (mouseMove.y - prevMouseMove.y) / screen.height * 100;
+                        float xR = (mouseMove.y - prevMouseMove.y) / screen.height * 100 * playerSens;
                         camTran.RotateAround(ballPos, camTran.right, -xR);
 
 
@@ -202,8 +190,11 @@ public class GameManager : MonoBehaviour
                     }
                     break;
                 case 2: //fire
-                    playerBallClick = true;
-                    changed = true;
+                    if (!UIC.InUI)
+                    {
+                        playerBallClick = true;
+                        changed = true;
+                    }
                     break;
 
             }
@@ -221,11 +212,11 @@ public class GameManager : MonoBehaviour
             if (mouseClick.right && (mouseMove - prevMouseMove).magnitude>0)
             {//user controls
              //y rotation
-                float yR = (mouseMove.x - prevMouseMove.x) / screen.width * 100;
+                float yR = (mouseMove.x - prevMouseMove.x) / screen.width * 100 * playerSens;
                 camTran.RotateAround(ballPos, camTran.up, yR);
 
                 //x rotation
-                float xR = (mouseMove.y - prevMouseMove.y) / screen.height * 100;
+                float xR = (mouseMove.y - prevMouseMove.y) / screen.height * 100 * playerSens;
                 camTran.RotateAround(ballPos, camTran.right, -xR);
 
 
@@ -247,7 +238,7 @@ public class GameManager : MonoBehaviour
             {
                 changed = true;
                 prevMouseClick = mouseClick;
-                if(mouseClick.left)
+                if(mouseClick.left && !UIC.InUI)
                 {
                     playerBallClick = true;
                 }
@@ -264,13 +255,13 @@ public class GameManager : MonoBehaviour
         trajectory.transform.LookAt(new Vector3(ball.x, 0.6f, ball.z) + new Vector3(camf.x, 0, camf.z).normalized * hitStrenght);
         trajectory.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(1, hitStrenght / 2);
 
-        if (playerBallClick && !CM.InUI)
+        if (playerBallClick)
         {//firrre!!!
             mainBall.GetComponent<Rigidbody>().velocity = new Vector3(CM.Cam.transform.forward.x, 0, CM.Cam.transform.forward.z).normalized * hitStrenght;
             trajectory.SetActive(false);
 
             playAgain = false;
-            playing = false;
+            Playing = false;
             CM.Active = true;
             playerBallClick = false;
             Net.UpdateAllBalls();
@@ -324,7 +315,7 @@ public class GameManager : MonoBehaviour
 
         if (Mathf.Abs((camTran.position - ballPos + Vector3.up * 2).magnitude) <= 7.1 && (Mathf.Abs(camTran.rotation.w - targetRotation.w + camTran.rotation.x - targetRotation.x) < 5))
         {
-            playing = true;
+            Playing = true;
             trajectory.SetActive(true);
             trajectory.transform.position = new Vector3(ballPos.x, 0.6f, ballPos.z) + new Vector3(camTran.forward.x, 0, camTran.forward.z).normalized * hitStrenght / 2;
             trajectory.transform.localScale = new Vector3(0.02f, 1, hitStrenght / 10f);
@@ -344,81 +335,53 @@ public class GameManager : MonoBehaviour
         mainBall.GetComponent<Rigidbody>().isKinematic = true;
         mainBall.GetComponent<mainBall>().placing = true;
 
-        if (multiplayer)
-        {
-            net.SendBallData(new BallData(0, true, false));
-        }
+        net.SendBallData(new BallData(0, true, false));
     }
     public void BallFell(int ballNo, bool solidColor)
     {
         if (ballNo == 8)
         {//game over
             Time.timeScale = 0;
-            if (playerTurn)
-            {
-                if (player2Points == 7)
-                {
-                    //win
-                    Message.text = player2Name + " a gagné la partie";
-                }
-                else
-                {
-                    //loose
-                    Message.text = player1Name + " a gagné la partie, " + player2Name + " a fait tomber la boule 8 avant les boules 9-15";
-                }
-            }
-            else
-            {
-                if (player1Points == 7)
-                {
-                    //win
-                    Message.text = player1Name + " a gagné la partie";
-                }
-                else
-                {
-                    //loose
-                    Message.text = player2Name + " a gagné la partie, " + player1Name + " a fait tomber la boule 8 avant les boules 1-7";
-                }
-            }
+            UIC.EndGame();
         }
         else
         {
-            if (!firstBallFell)
+            if (!FirstBallFell)
             {
-                firstBallFell = true;
+                FirstBallFell = true;
 
-                if (!playerTurn)
+                if (!PlayerTurn)
                 {//player 1
-                    player1Solid = solidColor;
-                    player1Points++;
+                    Player1Solid = solidColor;
+                    Player1Points++;
 
                 }
                 else
                 {//player 2
-                    player1Solid = !solidColor;
-                    player2Points++;
+                    Player1Solid = !solidColor;
+                    Player2Points++;
                 }
                 playAgain = true;
-                UpdateProfiles();
+                UIC.UpdateProfiles();
                 return;
             }
 
             if (solidColor)
             {
-                if (player1Solid)
+                if (Player1Solid)
                 {
-                    player1Points++;
+                    Player1Points++;
 
-                    if (!playerTurn)
+                    if (!PlayerTurn)
                     {
                         playAgain = true;
                     }
                 }
                 else
                 {
-                    player2Points++;
+                    Player2Points++;
 
-                    if (playerTurn)
+                    if (PlayerTurn)
                     {
                         playAgain = true;
                     }
@@ -426,27 +389,27 @@ public class GameManager : MonoBehaviour
             }
             else //pas solid
             {
-                if (!player1Solid)
+                if (!Player1Solid)
                 {
-                    player1Points++;
+                    Player1Points++;
 
-                    if (!playerTurn)
+                    if (!PlayerTurn)
                     {
                         playAgain = true;
                     }
                 }
                 else
                 {
-                    player2Points++;
+                    Player2Points++;
 
-                    if (playerTurn)
+                    if (PlayerTurn)
                     {
                         playAgain = true;
                     }
                 }
             }
         }
-        UpdateProfiles();
+        UIC.UpdateProfiles();
     }
     public void UpdateBalls(BallData ball)
     {
@@ -480,62 +443,23 @@ public class GameManager : MonoBehaviour
     }
     public void EnableMultiplayer(bool first)
     {
-        multiplayer = true;
         sendPackets = first;
         CM.Active = !first;
-        UpdateProfiles();
+        UIC.UpdateProfiles();
     }
     public void OtherPlayerPlayRequest() //resume la partie, assume que chaque balle a cessé de bouger
     {
         CM.Active = false;
         sendPackets = true;
-        playerTurn = !playerTurn;
-        UpdateProfiles();
+        PlayerTurn = !PlayerTurn;
+        UIC.UpdateProfiles();
         if (mainBallFell)
         {
             MainBallPlacementRequest();
         }
     }
-    void UpdateProfiles()
+    public void UpdateSens(float sens)
     {
-        if (!playerTurn)
-        {
-
-            player1Display.GetComponent<Image>().color = new Color(0.8f, 0.6f, 0.6f, 0.7f);
-        }
-        else
-        {
-            player1Display.GetComponent<Image>().color = new Color(0.6f, 0.6f, 0.6f, 0.5f);
-        }
-        TextMeshProUGUI[] text1 = player1Display.GetComponentsInChildren<TextMeshProUGUI>(); //lenght 3, 0= nom, 1= score, 2 = balltype
-
-        text1[0].text = player1Name;
-
-        text1[1].text = "Score: " + player1Points;
-
-        if (firstBallFell)
-        {
-            text1[2].text = player1Solid ? "Solide" : "Rayé";
-        }
-
-        if (playerTurn)
-        {
-            player2Display.GetComponent<Image>().color = new Color(0.8f, 0.6f, 0.6f, 0.7f);
-
-        }
-        else
-        {
-            player2Display.GetComponent<Image>().color = new Color(0.6f, 0.6f, 0.6f, 0.5f);
-        }
-        TextMeshProUGUI[] text2 = player2Display.GetComponentsInChildren<TextMeshProUGUI>(); //lenght 3, 0= nom, 1= score, 2 = balltype
-
-        text2[0].text = player2Name;
-
-        text2[1].text = "Score: " + player2Points;
-
-        if (firstBallFell)
-        {
-            text2[2].text = player1Solid ? "Rayé" : "Solide";
-        }
+        playerSens = sens;
     }
 }

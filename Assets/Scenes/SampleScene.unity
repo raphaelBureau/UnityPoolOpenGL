@@ -925,9 +925,7 @@ MonoBehaviour:
   point2: {fileID: 0}
   point3: {fileID: 0}
   mainBall: {fileID: 1137021058}
-  velocityFactor: 5
   yVelocityFactor: 15
-  viewDistanceFactor: 10
 --- !u!65 &182172909
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1753,9 +1751,7 @@ MonoBehaviour:
   point2: {fileID: 0}
   point3: {fileID: 0}
   mainBall: {fileID: 1137021058}
-  velocityFactor: 5
   yVelocityFactor: 15
-  viewDistanceFactor: 10
 --- !u!65 &437631402
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1803,6 +1799,7 @@ GameObject:
   - component: {fileID: 463930439}
   - component: {fileID: 463930441}
   - component: {fileID: 463930440}
+  - component: {fileID: 463930442}
   m_Layer: 5
   m_Name: OptionsToggle
   m_TagString: Untagged
@@ -1827,8 +1824,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -50}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchoredPosition: {x: 0, y: -35}
+  m_SizeDelta: {x: 70, y: 70}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &463930440
 MonoBehaviour:
@@ -1868,6 +1865,67 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 463930438}
   m_CullTransparentMesh: 1
+--- !u!114 &463930442
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 463930438}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 0
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1188322063}
+          m_TargetAssemblyTypeName: UIControls, Assembly-CSharp
+          m_MethodName: MouseSettingsEnter
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 1
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1188322063}
+          m_TargetAssemblyTypeName: UIControls, Assembly-CSharp
+          m_MethodName: MouseSettingsExit
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 4
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1188322063}
+          m_TargetAssemblyTypeName: UIControls, Assembly-CSharp
+          m_MethodName: ToggleSettingsMenu
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &475409790
 GameObject:
   m_ObjectHideFlags: 0
@@ -1917,9 +1975,7 @@ MonoBehaviour:
   point2: {fileID: 0}
   point3: {fileID: 0}
   mainBall: {fileID: 1137021058}
-  velocityFactor: 5
   yVelocityFactor: 15
-  viewDistanceFactor: 10
 --- !u!65 &475409793
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2463,8 +2519,20 @@ MonoBehaviour:
   m_Group: {fileID: 0}
   onValueChanged:
     m_PersistentCalls:
-      m_Calls: []
-  m_IsOn: 1
+      m_Calls:
+      - m_Target: {fileID: 1188322063}
+        m_TargetAssemblyTypeName: UIControls, Assembly-CSharp
+        m_MethodName: ToggleBackground
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  m_IsOn: 0
 --- !u!1 &657090768
 GameObject:
   m_ObjectHideFlags: 0
@@ -3291,6 +3359,7 @@ GameObject:
   - component: {fileID: 854905463}
   - component: {fileID: 854905465}
   - component: {fileID: 854905464}
+  - component: {fileID: 854905466}
   m_Layer: 5
   m_Name: OptionsMenu
   m_TagString: Untagged
@@ -3357,6 +3426,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 854905462}
   m_CullTransparentMesh: 1
+--- !u!114 &854905466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 854905462}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 0
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1188322063}
+          m_TargetAssemblyTypeName: UIControls, Assembly-CSharp
+          m_MethodName: MouseMenuEnter
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 1
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 1188322063}
+          m_TargetAssemblyTypeName: UIControls, Assembly-CSharp
+          m_MethodName: MouseMenuExit
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &870183832
 GameObject:
   m_ObjectHideFlags: 0
@@ -6426,9 +6540,7 @@ MonoBehaviour:
   point2: {fileID: 0}
   point3: {fileID: 0}
   mainBall: {fileID: 1137021058}
-  velocityFactor: 5
   yVelocityFactor: 15
-  viewDistanceFactor: 10
 --- !u!65 &923093579
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -7095,6 +7207,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1188322062}
   - component: {fileID: 1188322061}
+  - component: {fileID: 1188322063}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -7119,10 +7232,7 @@ MonoBehaviour:
   mainBall: {fileID: 1137021058}
   trajectory: {fileID: 1062133162}
   net: {fileID: 963194229}
-  Message: {fileID: 1712484910}
   sendPackets: 0
-  player1Display: {fileID: 787721132}
-  player2Display: {fileID: 882554387}
   mainBallNoReplay: 0
 --- !u!4 &1188322062
 Transform:
@@ -7139,6 +7249,26 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1188322063
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1188322060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3662289378269c24ea36c0a68a79f37b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Message: {fileID: 1712484910}
+  player1Display: {fileID: 787721132}
+  player2Display: {fileID: 882554387}
+  BackgroundScene: {fileID: 2123584742}
+  SettingsMenu: {fileID: 854905462}
+  CamControlBackground: {fileID: 1633921830}
+  SettingsToggleBackground: {fileID: 463930440}
+  SettingsMenuBackground: {fileID: 854905464}
 --- !u!1 &1189762167
 GameObject:
   m_ObjectHideFlags: 0
@@ -7645,9 +7775,7 @@ MonoBehaviour:
   point2: {fileID: 0}
   point3: {fileID: 0}
   mainBall: {fileID: 1137021058}
-  velocityFactor: 5
   yVelocityFactor: 15
-  viewDistanceFactor: 10
 --- !u!65 &1362987971
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -7908,9 +8036,7 @@ MonoBehaviour:
   point2: {fileID: 0}
   point3: {fileID: 0}
   mainBall: {fileID: 1137021058}
-  velocityFactor: 5
   yVelocityFactor: 15
-  viewDistanceFactor: 10
 --- !u!65 &1474729940
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -7998,7 +8124,7 @@ GameObject:
   - component: {fileID: 1503410497}
   - component: {fileID: 1503410496}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: UI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8359,7 +8485,6 @@ MonoBehaviour:
   LazySkyMargin: 5
   mainBall: {fileID: 1137021058}
   CamControlBackground: {fileID: 1633921830}
-  InUI: 0
   BallGameObj: {fileID: 1578094088}
   Active: 0
 --- !u!1 &1564901373
@@ -8682,9 +8807,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1552851501}
-          m_TargetAssemblyTypeName: CameraManager, Assembly-CSharp
-          m_MethodName: ToggleCamEnter
+        - m_Target: {fileID: 1188322063}
+          m_TargetAssemblyTypeName: UIControls, Assembly-CSharp
+          m_MethodName: MouseCamEnter
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -8698,9 +8823,9 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1552851501}
-          m_TargetAssemblyTypeName: CameraManager, Assembly-CSharp
-          m_MethodName: ToggleCamExit
+        - m_Target: {fileID: 1188322063}
+          m_TargetAssemblyTypeName: UIControls, Assembly-CSharp
+          m_MethodName: MouseCamExit
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -9871,12 +9996,24 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1600812348}
   m_HandleRect: {fileID: 1600812347}
   m_Direction: 0
-  m_Value: 0.2
+  m_Value: 0.5
   m_Size: 0.05
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1188322063}
+        m_TargetAssemblyTypeName: UIControls, Assembly-CSharp
+        m_MethodName: SetSens
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2089110261
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10145,6 +10282,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2123168043}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &2123584742 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: fff83f8c402e16b4f9413752c37554c4, type: 3}
+  m_PrefabInstance: {fileID: 889921115}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2141137611
 GameObject:
   m_ObjectHideFlags: 0
@@ -10202,7 +10344,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 5
+  m_text: 2
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
