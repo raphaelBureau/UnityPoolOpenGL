@@ -54,6 +54,8 @@ public class GameManager : MonoBehaviour
     bool placingMainBall = false;
     bool mainBallFell = false;
 
+    public bool MobileDevice { get; private set; }
+
     public bool PlayerTurn { get; private set;} //false = player 1, true = player 2;
 
     bool playAgain = false; //si un point = true
@@ -73,6 +75,7 @@ public class GameManager : MonoBehaviour
     UIControls UIC;
     void Start()
     {
+        MobileDevice = IsMobile();
         UIC = GetComponent<UIControls>();
         mainBallNoReplay = false;
         sendPackets = false;
@@ -160,7 +163,7 @@ public class GameManager : MonoBehaviour
         Transform camTran = CM.Cam.transform;
         Vector3 ballPos = mainBall.transform.position;
 
-        if (IsMobile())
+        if (MobileDevice)
         {//mobile
             switch(Input.touchCount)
             {
@@ -176,15 +179,22 @@ public class GameManager : MonoBehaviour
                     if ((mouseMove - prevMouseMove).magnitude > 0)
                     {//user controls
                      //y rotation
-                        float yR = (mouseMove.x - prevMouseMove.x) / screen.width * 100 * playerSens;
-                        camTran.RotateAround(ballPos, camTran.up, yR);
+                        if (UIC.StrengthMode)
+                        {
+                            hitStrenght+= (mouseMove.y - prevMouseMove.y) / screen.height * 100;
+                        }
+                        else
+                        {
+                            float yR = (mouseMove.x - prevMouseMove.x) / screen.width * 100 * playerSens;
+                            camTran.RotateAround(ballPos, camTran.up, yR);
 
-                        //x rotation
-                        float xR = (mouseMove.y - prevMouseMove.y) / screen.height * 100 * playerSens;
-                        camTran.RotateAround(ballPos, camTran.right, -xR);
+                            //x rotation
+                            float xR = (mouseMove.y - prevMouseMove.y) / screen.height * 100 * playerSens;
+                            camTran.RotateAround(ballPos, camTran.right, -xR);
 
 
-                        camTran.LookAt(ballPos);
+                            camTran.LookAt(ballPos);
+                        }
                         changed = true;
                         prevMouseMove = mouseMove;
                     }

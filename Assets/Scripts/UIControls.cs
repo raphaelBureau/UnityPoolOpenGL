@@ -1,14 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(GameManager))]
+
 public class UIControls : MonoBehaviour
 {
     string player1Name = "Joueur 1";
     string player2Name = "Joueur 2";
+    [DllImport("__Internal")] private static extern bool IsMobile();
 
     [SerializeField] TextMeshProUGUI Message;
     [SerializeField] GameObject player1Display;
@@ -18,6 +21,7 @@ public class UIControls : MonoBehaviour
     [SerializeField] Image CamControlBackground;
     [SerializeField] Image SettingsToggleBackground;
     [SerializeField] Image SettingsMenuBackground;
+    [SerializeField] Image StrengthToggleBackground;
 
     Color red = new Color(1, 0.1f, 0.1f, 0.5f);
     Color defaultColor = new Color(0.6f, 0.6f, 0.6f, 0.5f);
@@ -26,8 +30,9 @@ public class UIControls : MonoBehaviour
     const float solid = 1f;
 
     GameManager GM;
-    
+
     public bool InUI { get; private set; }
+    public bool StrengthMode { get; private set; }
     void Start()
     {
         GM = GetComponent<GameManager>();
@@ -36,6 +41,8 @@ public class UIControls : MonoBehaviour
         SettingsToggleBackground.color = defaultColor;
         SettingsMenuBackground.color = defaultColor;
         InUI = false;
+
+        StrengthToggleBackground.gameObject.SetActive(IsMobile());
     }
 
     public void EndGame()
@@ -169,5 +176,26 @@ public class UIControls : MonoBehaviour
         const float minSens = 0.1f;
         float sens = sliderValue * maxSens + minSens;
         GM.UpdateSens(sens);
+    }
+    public void MouseStrengthEnter()
+    {
+        Color iconColor = StrengthToggleBackground.color;
+        iconColor.a = solid - 0.1f;
+        StrengthToggleBackground.color = iconColor;
+        InUI = true;
+    }
+    public void MouseStrengthExit()
+    {
+        Color iconColor = StrengthToggleBackground.color;
+        iconColor.a = fade;
+        StrengthToggleBackground.color = iconColor;
+        InUI = false;
+    }
+    public void MouseStrengthToggle()
+    {
+        StrengthMode = !StrengthMode;
+        Color color = StrengthMode ? red : defaultColor;
+        color.a = StrengthToggleBackground.color.a;
+        StrengthToggleBackground.color = color;
     }
 }
