@@ -20,6 +20,7 @@ public class UIControls : MonoBehaviour
     [SerializeField] GameObject SettingsMenu;
     [SerializeField] Image CamControlBackground;
     [SerializeField] Image SettingsToggleBackground;
+        [SerializeField] Toggle SettingsBackgroundToggleButton;
     [SerializeField] Image SettingsMenuBackground;
     [SerializeField] Image StrengthToggleBackground;
 
@@ -41,8 +42,10 @@ public class UIControls : MonoBehaviour
         SettingsToggleBackground.color = defaultColor;
         SettingsMenuBackground.color = defaultColor;
         InUI = false;
-
-        StrengthToggleBackground.gameObject.SetActive(IsMobile());
+        bool mobile = IsMobile();
+        StrengthToggleBackground.gameObject.SetActive(mobile);
+        SettingsBackgroundToggleButton.isOn = mobile;
+        BackgroundScene.SetActive(!mobile);
     }
 
     public void EndGame()

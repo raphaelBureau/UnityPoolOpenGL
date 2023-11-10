@@ -7340,6 +7340,7 @@ MonoBehaviour:
   SettingsMenu: {fileID: 854905462}
   CamControlBackground: {fileID: 1633921830}
   SettingsToggleBackground: {fileID: 463930440}
+  SettingsBackgroundToggleButton: {fileID: 633987596}
   SettingsMenuBackground: {fileID: 854905464}
   StrengthToggleBackground: {fileID: 1299054944}
 --- !u!1 &1189762167
