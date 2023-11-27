@@ -3,19 +3,26 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UI;
+using static Networking;
 
 [RequireComponent(typeof(GameManager))]
 
 public class UIControls : MonoBehaviour
 {
-    string player1Name = "Joueur 1";
-    string player2Name = "Joueur 2";
+    public string player1Name = "Joueur 1";
+    public string player2Name = "Joueur 2";
+
+    public string player1ImageSrc = "default.png";
+    public string player2ImageSrc = "default.png";
     [DllImport("__Internal")] private static extern bool IsMobile();
 
     [SerializeField] TextMeshProUGUI Message;
     [SerializeField] GameObject player1Display;
     [SerializeField] GameObject player2Display;
+    [SerializeField] RawImage player1Image;
+    [SerializeField] RawImage player2Image;
     [SerializeField] GameObject BackgroundScene;
     [SerializeField] GameObject SettingsMenu;
     [SerializeField] Image CamControlBackground;
@@ -77,6 +84,25 @@ public class UIControls : MonoBehaviour
             }
         }
     }
+    public void UpdateImages()
+    {
+        StartCoroutine(Download(player1ImageSrc,player1Image));
+        StartCoroutine(Download(player2ImageSrc, player2Image));
+        IEnumerator Download(string url, RawImage img)
+        {
+            print("fetching image: " + "bureau.blue/img/profiles/" + url.ToString());
+            UnityWebRequest req = UnityWebRequestTexture.GetTexture("bureau.blue/img/profiles/" + url.ToString());
+            yield return req.SendWebRequest();
+            if(req.result != UnityWebRequest.Result.Success)
+            {
+                print("image loading error");
+            }
+            else
+            {
+                img.texture = DownloadHandlerTexture.GetContent(req);
+            }
+        }
+    }
     public void UpdateProfiles()
     {
 
@@ -111,7 +137,7 @@ public class UIControls : MonoBehaviour
         }
         TextMeshProUGUI[] text2 = player2Display.GetComponentsInChildren<TextMeshProUGUI>(); //lenght 3, 0= nom, 1= score, 2 = balltype
 
-        text2[0].text = player2Name;
+        text2[0].text = player2Name; ;
 
         text2[1].text = "Score: " + GM.Player2Points;
 

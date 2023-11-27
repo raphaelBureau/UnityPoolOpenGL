@@ -12,10 +12,13 @@ public class Networking : MonoBehaviour
     Socket socket;
     [SerializeField] GameManager GM;
     [SerializeField] TextMeshProUGUI Message;
+    [SerializeField] UIControls UIC;
 
     [DllImport("__Internal")] private static extern void sendMessage(string mess);
 
     [DllImport("__Internal")] private static extern void setName(string name);
+
+    [DllImport("__Internal")] private static extern string GetUserInfo();
 
     int frameCounter = 0;
 
@@ -27,12 +30,26 @@ public class Networking : MonoBehaviour
         Message.text = "Connection au Serveur...";
         socket = SocketIo.establishSocketConnection("wss://bureau.blue:3000");
         socket.connect();
- 
-        Message.text = "En attente d'un autre joueur";
-        socket.emit("joinGame", "pool"); //send connection request
 
         socket.on("connect_error", (arg) => {
             Message.text = "Erreur de connection";
+        });
+
+        socket.on("connected", (arg) =>
+        {
+        Message.text = "En attente d'un autre joueur";
+            print("getting user info");
+            string info = GetUserInfo();
+            print("parsing user info");
+            print(info);
+            UserInfo user = JsonUtility.FromJson<UserInfo>(info);
+            print("parsed user info");
+            UIC.player1Name = user.gamertag;
+            UIC.player1ImageSrc = user.img;
+            UIC.UpdateImages();
+            UIC.UpdateProfiles();
+            print("requesting game join");
+        socket.emit("joinGame", info); //send connection request doit donner les userinfo obtenus du client javascript
         });
 
         socket.on("playerLeave", (arg) =>
@@ -42,12 +59,32 @@ public class Networking : MonoBehaviour
             Time.timeScale = 0;
         });
 
+        socket.on("opponentInfo", (info) =>
+        {
+            print("received opponent info");
+            UserInfo user = JsonUtility.FromJson<UserInfo>(info);
+            UIC.player2Name = user.gamertag;
+            UIC.player2ImageSrc = user.img;
+            print("parsed opponent info");
+        });
+
         socket.on("gameStart", (first) =>
         {
             Message.text = "";
             print("connected");
             GM.EnableMultiplayer(bool.Parse(first));
-            setName(bool.Parse(first) ? "Joueur 1" : "Joueur 2");
+            if(!bool.Parse(first))
+            {
+                string tempName = UIC.player1Name;
+                string tempSrc = UIC.player1ImageSrc;
+                UIC.player1Name = UIC.player2Name;
+                UIC.player1ImageSrc = UIC.player2ImageSrc;
+                UIC.player2Name = tempName;
+                UIC.player2ImageSrc = tempSrc;
+                UIC.UpdateImages();
+                UIC.UpdateProfiles();
+            }
+            setName(bool.Parse(first) ? UIC.player1Name : UIC.player2Name);
             Time.timeScale = 1; //play game;
         });
 
@@ -137,7 +174,9 @@ public class Networking : MonoBehaviour
 
     public void GiveOtherPlayerControl()
     {
+        print("giving other player control");
         socket.emit("giveControl", "wasd");
+        print("control emit");
     }
 
     public void SendBallData(BallData data)
@@ -181,8 +220,9 @@ public class Networking : MonoBehaviour
             ball++;
         }
         // print(JsonUtility.ToJson(pos));
-
+      //  print("emit update balls");
         socket.emit("sendPos", JsonUtility.ToJson(pos));
+      //  print("ball data sent");
         //    print("sent position: " + JsonUtility.ToJson(pos));
     }
 
@@ -212,6 +252,14 @@ public class Networking : MonoBehaviour
         public Vector3 scale;
         public Vector2 texture;
         public Quaternion rotation;
+    }
+
+    [System.Serializable]
+    public class UserInfo
+    {
+        public string id;
+        public string gamertag;
+        public string img;
     }
 
 }

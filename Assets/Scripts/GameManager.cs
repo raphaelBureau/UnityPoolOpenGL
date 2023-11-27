@@ -274,6 +274,7 @@ public class GameManager : MonoBehaviour
             Playing = false;
             CM.Active = true;
             playerBallClick = false;
+            print("sending update balls");
             Net.UpdateAllBalls();
         }
     }
@@ -449,6 +450,7 @@ public class GameManager : MonoBehaviour
         {//balle normalle 
             ballList[ball.id].SetActive(ball.active);
             BallFell(ball.id, ball.id <= 8);
+            //
         }
     }
     public void EnableMultiplayer(bool first)
