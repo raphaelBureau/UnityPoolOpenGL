@@ -16,4 +16,7 @@ mergeInto(LibraryManager.library, {
       stringToUTF8(str, buffer, bufferSize);
       return buffer;
   },
+   GameLoaded: function() {
+    SendConnectionRequest();
+   },
 });

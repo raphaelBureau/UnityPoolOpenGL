@@ -39,6 +39,8 @@ function getCookie(cname) {
 
   let API_URL = "https://bureau.blue:8000/api";
 
+var auth = false;
+
 var user = {"id":-1,"gamertag":"guest","img":"default.png"};
 async function loadProfile() {
 
@@ -49,6 +51,9 @@ if(idUser == "" || authToken == "") {
 }
 else{
 user = await ajaxJSON(`/user/${idUser}`, "GET", { id: idUser, authToken: authToken });
+if(user!=false) {
+  auth = true;
+}
 }
 console.log(user);
 }
@@ -56,6 +61,17 @@ loadProfile();
 
 function GetUserData() {
   return JSON.stringify(user);
+}
+
+function SendConnectionRequest() {
+  if(!auth) {
+    //demander les infos au user
+    let name = prompt("Entrez votre nom", "");
+    if (name.length > 0) {
+      user.gamertag = name;
+    }
+  }
+  unityInstance.SendMessage("Main", "JoinMatchmaking");
 }
 
 

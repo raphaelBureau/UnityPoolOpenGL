@@ -19,6 +19,7 @@ public class Networking : MonoBehaviour
     [DllImport("__Internal")] private static extern void setName(string name);
 
     [DllImport("__Internal")] private static extern string GetUserInfo();
+    [DllImport("__Internal")] private static extern void GameLoaded();
 
     int frameCounter = 0;
 
@@ -37,19 +38,7 @@ public class Networking : MonoBehaviour
 
         socket.on("connected", (arg) =>
         {
-        Message.text = "En attente d'un autre joueur";
-            print("getting user info");
-            string info = GetUserInfo();
-            print("parsing user info");
-            print(info);
-            UserInfo user = JsonUtility.FromJson<UserInfo>(info);
-            print("parsed user info");
-            UIC.player1Name = user.gamertag;
-            UIC.player1ImageSrc = user.img;
-            UIC.UpdateImages();
-            UIC.UpdateProfiles();
-            print("requesting game join");
-        socket.emit("joinGame", info); //send connection request doit donner les userinfo obtenus du client javascript
+            GameLoaded();
         });
 
         socket.on("playerLeave", (arg) =>
@@ -63,8 +52,28 @@ public class Networking : MonoBehaviour
         {
             print("received opponent info");
             UserInfo user = JsonUtility.FromJson<UserInfo>(info);
-            UIC.player2Name = user.gamertag;
-            UIC.player2ImageSrc = user.img;
+            if (GM.Started)
+            {
+                if (GM.sendPackets)
+                {
+                    UIC.player2Name = UIC.player1Name;
+                    UIC.player2ImageSrc = UIC.player1ImageSrc;
+                    UIC.player1Name = user.gamertag;
+                    UIC.player1ImageSrc = user.img;
+                }
+                else
+                {
+                    UIC.player2Name = user.gamertag;
+                    UIC.player2ImageSrc = user.img;
+                }
+            }
+            else
+            {
+                UIC.player2Name = user.gamertag;
+                UIC.player2ImageSrc = user.img;
+            }
+            UIC.UpdateProfiles();
+            UIC.UpdateProfiles();
             print("parsed opponent info");
         });
 
@@ -73,17 +82,6 @@ public class Networking : MonoBehaviour
             Message.text = "";
             print("connected");
             GM.EnableMultiplayer(bool.Parse(first));
-            if(!bool.Parse(first))
-            {
-                string tempName = UIC.player1Name;
-                string tempSrc = UIC.player1ImageSrc;
-                UIC.player1Name = UIC.player2Name;
-                UIC.player1ImageSrc = UIC.player2ImageSrc;
-                UIC.player2Name = tempName;
-                UIC.player2ImageSrc = tempSrc;
-                UIC.UpdateImages();
-                UIC.UpdateProfiles();
-            }
             setName(bool.Parse(first) ? UIC.player1Name : UIC.player2Name);
             Time.timeScale = 1; //play game;
         });
@@ -170,6 +168,23 @@ public class Networking : MonoBehaviour
         {
             frameCounter = 0;
         }
+    }
+
+    public void JoinMatchmaking()
+    {
+        Message.text = "En attente d'un autre joueur";
+        print("getting user info");
+        string info = GetUserInfo();
+        print("parsing user info");
+        print(info);
+        UserInfo user = JsonUtility.FromJson<UserInfo>(info);
+        print("parsed user info");
+        UIC.player1Name = user.gamertag;
+        UIC.player1ImageSrc = user.img;
+        UIC.UpdateImages();
+        UIC.UpdateProfiles();
+        print("requesting game join");
+        socket.emit("joinGame", info); //send connection request doit donner les userinfo obtenus du client javascript
     }
 
     public void GiveOtherPlayerControl()

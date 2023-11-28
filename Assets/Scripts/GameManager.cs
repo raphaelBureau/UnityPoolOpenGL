@@ -56,6 +56,8 @@ public class GameManager : MonoBehaviour
 
     public bool MobileDevice { get; private set; }
 
+    public bool Started { get; private set; }
+
     public bool PlayerTurn { get; private set;} //false = player 1, true = player 2;
 
     bool playAgain = false; //si un point = true
@@ -81,6 +83,7 @@ public class GameManager : MonoBehaviour
         sendPackets = false;
         PlayerTurn = false;
         playAgain = false;
+        Started = true;
         Player1Points = 0;
         Player2Points = 0;
         FirstBallFell = false;
@@ -455,6 +458,7 @@ public class GameManager : MonoBehaviour
     }
     public void EnableMultiplayer(bool first)
     {
+        Started = true;
         sendPackets = first;
         CM.Active = !first;
         UIC.UpdateProfiles();

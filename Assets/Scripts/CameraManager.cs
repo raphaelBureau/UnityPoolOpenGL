@@ -71,16 +71,19 @@ public class CameraManager : MonoBehaviour
             }
             }
         }
-        if (totalVel == 0)
+        if (fastBalls.Count > 0)
         {
-            return mainBall.transform.position;
+            foreach (var ball in fastBalls)
+            {
+                res += ball.pos * ball.vel;
+                // print("pos: " + ball.pos + ", vel:" + ball.vel);
+            }
+            res = res / totalVel;
         }
-        foreach(var ball in fastBalls)
+        else
         {
-            res += ball.pos*ball.vel;
-           // print("pos: " + ball.pos + ", vel:" + ball.vel);
+           res= mainBall.transform.position;
         }
-        res = res / totalVel;
        // print("main: " + mainBall.transform.position + ", lookAvg:" + res + ", totalVel: " + totalVel);
         return res;
     }
