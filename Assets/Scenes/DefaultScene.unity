@@ -7347,6 +7347,7 @@ MonoBehaviour:
   SettingsBackgroundToggleButton: {fileID: 633987596}
   SettingsMenuBackground: {fileID: 854905464}
   StrengthToggleBackground: {fileID: 1299054944}
+  Net: {fileID: 963194229}
 --- !u!1 &1189762167
 GameObject:
   m_ObjectHideFlags: 0

@@ -31,6 +31,8 @@ public class UIControls : MonoBehaviour
     [SerializeField] Image SettingsMenuBackground;
     [SerializeField] Image StrengthToggleBackground;
 
+    [SerializeField] Networking Net;
+
     Color red = new Color(1, 0.1f, 0.1f, 0.5f);
     Color defaultColor = new Color(0.6f, 0.6f, 0.6f, 0.5f);
     Color focusedColor = new Color(0.6f, 0.6f, 0.6f, 1f);
@@ -63,11 +65,13 @@ public class UIControls : MonoBehaviour
             {
                 //win
                 Message.text = player2Name + " a gagné la partie";
+                Net.SendGameOverData(!GM.First);
             }
             else
             {
                 //loose
                 Message.text = player1Name + " a gagné la partie, " + player2Name + " a fait tomber la boule 8 avant les boules 9-15";
+                Net.SendGameOverData(GM.First);
             }
         }
         else
@@ -76,11 +80,13 @@ public class UIControls : MonoBehaviour
             {
                 //win
                 Message.text = player1Name + " a gagné la partie";
+                Net.SendGameOverData(GM.First);
             }
             else
             {
                 //loose
                 Message.text = player2Name + " a gagné la partie, " + player1Name + " a fait tomber la boule 8 avant les boules 1-7";
+                Net.SendGameOverData(!GM.First);
             }
         }
     }

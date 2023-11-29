@@ -57,6 +57,7 @@ public class GameManager : MonoBehaviour
     public bool MobileDevice { get; private set; }
 
     public bool Started { get; private set; }
+    public bool First { get; private set; }
 
     public bool PlayerTurn { get; private set;} //false = player 1, true = player 2;
 
@@ -184,7 +185,12 @@ public class GameManager : MonoBehaviour
                      //y rotation
                         if (UIC.StrengthMode)
                         {
+                            float oldStr = hitStrenght;
                             hitStrenght+= (mouseMove.y - prevMouseMove.y) / screen.height * 100;
+                            if (hitStrenght > 50 || hitStrenght < -50) {
+                                hitStrenght = oldStr;
+                            }
+
                         }
                         else
                         {
@@ -244,7 +250,12 @@ public class GameManager : MonoBehaviour
 
             if (Mathf.Abs(Input.mouseScrollDelta.y) > 0)
             {
+                float oldStr = hitStrenght;
                 hitStrenght += Input.mouseScrollDelta.y;
+                if (hitStrenght > 50 || hitStrenght < -50)
+                {
+                    hitStrenght = oldStr;
+                }
                 changed = true;
             }
             if (prevMouseClick.left != mouseClick.left || prevMouseClick.right != mouseClick.right)
@@ -461,6 +472,7 @@ public class GameManager : MonoBehaviour
         Started = true;
         sendPackets = first;
         CM.Active = !first;
+        First = first;
         UIC.UpdateProfiles();
     }
     public void OtherPlayerPlayRequest() //resume la partie, assume que chaque balle a cessé de bouger

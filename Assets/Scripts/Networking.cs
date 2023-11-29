@@ -181,6 +181,11 @@ public class Networking : MonoBehaviour
         print("control emit");
     }
 
+    public void SendGameOverData(bool status)
+    {
+        socket.emit("gameOver", status.ToString());
+    }
+
     public void SendBallData(BallData data)
     {
         socket.emit("updateBalls", JsonUtility.ToJson(data));
