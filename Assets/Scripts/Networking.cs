@@ -48,41 +48,28 @@ public class Networking : MonoBehaviour
             Time.timeScale = 0;
         });
 
-        socket.on("opponentInfo", (info) =>
+        socket.on("gameStart", (info) =>
         {
-            print("received opponent info");
-            UserInfo user = JsonUtility.FromJson<UserInfo>(info);
-            if (GM.Started)
-            {
-                if (GM.sendPackets)
-                {
-                    UIC.player2Name = UIC.player1Name;
-                    UIC.player2ImageSrc = UIC.player1ImageSrc;
-                    UIC.player1Name = user.gamertag;
-                    UIC.player1ImageSrc = user.img;
-                }
-                else
-                {
-                    UIC.player2Name = user.gamertag;
-                    UIC.player2ImageSrc = user.img;
-                }
-            }
-            else
+            print("game found, opponent: " + info);
+            bool first = info.Substring(0, 1)[0] == '1';
+            UserInfo user = JsonUtility.FromJson<UserInfo>(info.Substring(1,info.Length-1));
+            Message.text = "";
+            GM.EnableMultiplayer(first); //c# as de la misere a parse un bool en string
+            if(first)
             {
                 UIC.player2Name = user.gamertag;
                 UIC.player2ImageSrc = user.img;
             }
+            else
+            {
+                UIC.player2Name = UIC.player1Name;
+                UIC.player2ImageSrc = UIC.player1ImageSrc;
+                UIC.player1Name = user.gamertag;
+                UIC.player1ImageSrc = user.img;
+            }
+            setName(first ? UIC.player1Name : UIC.player2Name);
             UIC.UpdateProfiles();
-            UIC.UpdateProfiles();
-            print("parsed opponent info");
-        });
-
-        socket.on("gameStart", (first) =>
-        {
-            Message.text = "";
-            print("connected");
-            GM.EnableMultiplayer(bool.Parse(first));
-            setName(bool.Parse(first) ? UIC.player1Name : UIC.player2Name);
+            UIC.UpdateImages();
             Time.timeScale = 1; //play game;
         });
 

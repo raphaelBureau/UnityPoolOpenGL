@@ -41,7 +41,7 @@ function getCookie(cname) {
 
 var auth = false;
 
-var user = {"id":-1,"gamertag":"guest","img":"default.png"};
+var user = {"id":-1,"gamertag":"guest","img":"default.png","lobby":""};
 async function loadProfile() {
 
 let idUser = getCookie("id");
@@ -70,6 +70,10 @@ function SendConnectionRequest() {
     if (name.length > 0) {
       user.gamertag = name;
     }
+  }
+  let lobby = prompt("entrez le code de partie privee (laissez vide pour partie publique)");
+  if(lobby.length > 0 && lobby.length < 30) {
+    user.lobby = lobby;
   }
   unityInstance.SendMessage("Main", "JoinMatchmaking");
 }
